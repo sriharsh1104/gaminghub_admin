@@ -33,12 +33,13 @@ apiClient.interceptors.request.use(
     const existingRequest = pendingRequests.get(requestKey);
 
     if (existingRequest) {
-      // Cancel the previous request
+      // Cancel the previous request and stop its loading
       existingRequest.cancel('Duplicate request cancelled');
-    } else {
-      // Start loading only for new requests (not duplicates)
-      store.dispatch(startLoading());
+      store.dispatch(stopLoading()); // Stop loading for cancelled request
     }
+    
+    // Start loading for this request (will be stopped when response comes)
+    store.dispatch(startLoading());
 
     // Create cancel token for this request
     const cancelTokenSource = axios.CancelToken.source();
@@ -76,8 +77,9 @@ apiClient.interceptors.response.use(
       pendingRequests.delete(requestKey);
     }
 
-    // Ignore cancelled requests (deduplication) - don't stop loading for cancelled requests
+    // Handle cancelled requests (deduplication)
     if (axios.isCancel(error)) {
+      // Loading already stopped in request interceptor when cancelling
       return Promise.reject(error);
     }
 

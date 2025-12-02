@@ -1,5 +1,6 @@
 import { useHealthStatusLogic } from './HealthStatus.logic';
 import BackButton from '@components/common/BackButton';
+import ThemeToggle from '@components/common/ThemeToggle';
 import './HealthStatus.scss';
 
 const HealthStatus: React.FC = () => {
@@ -16,6 +17,9 @@ const HealthStatus: React.FC = () => {
         <div className="header-left">
           <BackButton />
           <h1>Health Status</h1>
+        </div>
+        <div className="header-actions">
+          <ThemeToggle />
         </div>
       </header>
 

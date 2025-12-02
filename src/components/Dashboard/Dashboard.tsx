@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDashboardLogic } from './Dashboard.logic';
 import ConfirmationModal from '@components/common/ConfirmationModal';
 import SettingsModal from '@components/common/SettingsModal';
+import ThemeToggle from '@components/common/ThemeToggle';
 import { ROUTES } from '@utils/constants';
 import './Dashboard.scss';
 
@@ -72,6 +73,7 @@ const Dashboard: React.FC = () => {
         <header className="dashboard-header">
           <h1>Dashboard</h1>
           <div className="header-actions">
+            <ThemeToggle />
             <div className="settings-dropdown" ref={dropdownRef}>
               <button 
                 className="settings-button"

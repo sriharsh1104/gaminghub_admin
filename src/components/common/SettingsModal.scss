@@ -8,12 +8,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6));
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10000;
-  animation: fadeIn 0.2s ease;
+  animation: fadeIn 0.3s ease;
 }
 
 @keyframes fadeIn {
@@ -26,15 +27,30 @@
 }
 
 .settings-modal-content {
-  background-color: $background-color;
-  border: 1px solid $border-color;
+  background: linear-gradient(135deg, 
+    color.adjust($background-color, $lightness: 2%) 0%,
+    $background-color 100%
+  );
+  border: 1px solid rgba($border-color, 0.5);
   border-radius: $border-radius-lg;
-  max-width: 500px;
+  max-width: 520px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: $shadow-lg;
-  animation: slideUp 0.3s ease;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba($primary-color, 0.1);
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, $primary-color, color.adjust($primary-color, $lightness: 20%));
+  }
 }
 
 @keyframes slideUp {
@@ -55,9 +71,13 @@
 }
 
 .settings-modal-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: $text-color;
+  font-size: 1.6rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, $text-color 0%, color.adjust($text-color, $lightness: -10%) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
 }
 
 .settings-modal-close {
@@ -79,9 +99,20 @@
   @include flex-between;
   align-items: center;
   padding: $spacing-lg;
-  border: 1px solid $border-color;
-  border-radius: $border-radius-md;
-  background-color: color.adjust($background-color, $lightness: 2%);
+  border: 1px solid rgba($border-color, 0.5);
+  border-radius: $border-radius-lg;
+  background: linear-gradient(135deg, 
+    color.adjust($background-color, $lightness: 3%) 0%,
+    color.adjust($background-color, $lightness: 1%) 100%
+  );
+  transition: all $transition-fast;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: rgba($primary-color, 0.3);
+  }
 }
 
 .settings-option-label {
@@ -113,33 +144,40 @@
 
 .theme-toggle {
   position: relative;
-  width: 50px;
-  height: 28px;
-  border-radius: 14px;
-  border: none;
+  width: 56px;
+  height: 32px;
+  border-radius: 16px;
+  border: 2px solid rgba($primary-color, 0.3);
   cursor: pointer;
-  transition: background-color $transition-fast;
+  transition: all $transition-fast;
   padding: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 
   &.dark {
-    background-color: $primary-color;
+    background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -10%) 100%);
+    border-color: $primary-color;
   }
 
   &.light {
-    background-color: color.adjust($background-color, $lightness: 20%);
+    background: linear-gradient(135deg, color.adjust($background-color, $lightness: 20%) 0%, color.adjust($background-color, $lightness: 10%) 100%);
+  }
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba($primary-color, 0.4);
   }
 }
 
 .theme-toggle-slider {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  background-color: $secondary-color;
+  background: linear-gradient(135deg, $secondary-color 0%, color.adjust($secondary-color, $lightness: -5%) 100%);
   transition: transform $transition-fast;
-  box-shadow: $shadow-sm;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 
   .dark & {
-    transform: translateX(22px);
+    transform: translateX(24px);
   }
 
   .light & {

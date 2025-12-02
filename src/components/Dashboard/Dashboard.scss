@@ -5,7 +5,11 @@
 .dashboard-container {
   @include flex-between;
   min-height: 100vh;
-  background-color: $background-color;
+  background: linear-gradient(135deg, 
+    color.adjust($background-color, $lightness: -3%) 0%,
+    $background-color 100%
+  );
+  position: relative;
 }
 
 .dashboard-sidebar {
@@ -13,12 +17,17 @@
   left: 0;
   top: 0;
   height: 100vh;
-  background-color: color.adjust($background-color, $lightness: -3%);
-  border-right: 1px solid $border-color;
+  background: linear-gradient(180deg, 
+    color.adjust($background-color, $lightness: -5%) 0%,
+    color.adjust($background-color, $lightness: -3%) 100%
+  );
+  border-right: 1px solid rgba($border-color, 0.5);
   @include flex-column;
   transition: width $transition-normal;
   z-index: 1000;
   overflow: hidden;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
 
   &.open {
     width: 250px;
@@ -37,12 +46,16 @@
 }
 
 .sidebar-logo {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: $primary-color;
+  font-size: 1.3rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: 20%) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   white-space: nowrap;
   opacity: 1;
   transition: opacity $transition-fast;
+  letter-spacing: -0.5px;
 
   .closed & {
     opacity: 0;
@@ -72,16 +85,42 @@
   text-decoration: none;
   transition: all $transition-fast;
   border-left: 3px solid transparent;
+  border-radius: 0 $border-radius-md $border-radius-md 0;
+  margin: 0 $spacing-sm;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, rgba($primary-color, 0.1), transparent);
+    transition: width $transition-fast;
+  }
 
   &:hover {
-    background-color: rgba($primary-color, 0.1);
+    background: linear-gradient(90deg, rgba($primary-color, 0.15), rgba($primary-color, 0.05));
     color: $primary-color;
+    transform: translateX(4px);
+
+    &::before {
+      width: 100%;
+    }
   }
 
   &.active {
-    background-color: rgba($primary-color, 0.15);
+    background: linear-gradient(90deg, rgba($primary-color, 0.2), rgba($primary-color, 0.1));
     color: $primary-color;
     border-left-color: $primary-color;
+    box-shadow: -2px 0 10px rgba($primary-color, 0.3);
+    font-weight: 600;
+
+    &::before {
+      width: 100%;
+    }
   }
 }
 
@@ -149,8 +188,16 @@
 .dashboard-header {
   @include flex-between;
   padding: $spacing-xl $spacing-lg;
-  background-color: color.adjust($background-color, $lightness: -2%);
-  border-bottom: 1px solid $border-color;
+  background: linear-gradient(135deg, 
+    color.adjust($background-color, $lightness: -4%) 0%,
+    color.adjust($background-color, $lightness: -2%) 100%
+  );
+  border-bottom: 1px solid rgba($border-color, 0.5);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 
   .header-left {
     @include flex-center;
@@ -158,10 +205,14 @@
   }
 
   h1 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: $text-color;
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, $text-color 0%, color.adjust($text-color, $lightness: -10%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin: 0;
+    letter-spacing: -0.5px;
   }
 }
 
@@ -177,60 +228,142 @@
 .settings-button {
   @include button-secondary;
   padding: $spacing-sm;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+  transition: all $transition-fast;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba($primary-color, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+  }
+
+  &:hover {
+    background-color: rgba($primary-color, 0.1);
+    transform: scale(1.05) rotate(90deg);
+    border-color: $primary-color;
+
+    &::before {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &:active {
+    transform: scale(0.95) rotate(90deg);
+  }
+
+  svg {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 .dropdown-menu {
   position: absolute;
   top: calc(100% + $spacing-sm);
   right: 0;
-  background-color: $background-color;
-  border: 1px solid $border-color;
-  border-radius: $border-radius-md;
-  box-shadow: $shadow-lg;
-  min-width: 200px;
+  background: linear-gradient(135deg, 
+    color.adjust($background-color, $lightness: 2%) 0%,
+    $background-color 100%
+  );
+  border: 1px solid rgba($border-color, 0.5);
+  border-radius: $border-radius-lg;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 20px rgba($primary-color, 0.1);
+  min-width: 220px;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-10px);
+  transform: translateY(-10px) scale(0.95);
   transition: all $transition-fast;
   z-index: 1000;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, $primary-color, color.adjust($primary-color, $lightness: 20%));
+    opacity: 0;
+    transition: opacity $transition-fast;
+  }
 
   &.open {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+
+    &::before {
+      opacity: 1;
+    }
   }
 }
 
 .dropdown-item {
   @include flex-between;
   width: 100%;
-  padding: $spacing-md;
+  padding: $spacing-md $spacing-lg;
   background: none;
   border: none;
   color: $text-color;
   text-align: left;
   cursor: pointer;
-  transition: background-color $transition-fast;
-  gap: $spacing-sm;
+  transition: all $transition-fast;
+  gap: $spacing-md;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 3px;
+    background: linear-gradient(180deg, $primary-color, color.adjust($primary-color, $lightness: 20%));
+    transform: scaleY(0);
+    transition: transform $transition-fast;
+  }
 
   &:hover {
-    background-color: rgba($primary-color, 0.1);
+    background: linear-gradient(90deg, rgba($primary-color, 0.15), rgba($primary-color, 0.05));
+    padding-left: $spacing-xl;
+    transform: translateX(4px);
+
+    &::before {
+      transform: scaleY(1);
+    }
+  }
+
+  &:active {
+    transform: translateX(2px);
   }
 
   &:first-child {
-    border-top-left-radius: $border-radius-md;
-    border-top-right-radius: $border-radius-md;
+    border-top-left-radius: $border-radius-lg;
+    border-top-right-radius: $border-radius-lg;
   }
 
   &:last-child {
-    border-bottom-left-radius: $border-radius-md;
-    border-bottom-right-radius: $border-radius-md;
+    border-bottom-left-radius: $border-radius-lg;
+    border-bottom-right-radius: $border-radius-lg;
   }
 
   &.dropdown-item-info {
@@ -278,13 +411,57 @@
   @include card;
   @include flex-column;
   gap: $spacing-md;
+  background: linear-gradient(135deg, 
+    color.adjust($background-color, $lightness: 2%) 0%,
+    $background-color 100%
+  );
+  border: 1px solid rgba($border-color, 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 20px rgba($primary-color, 0.05);
+  transition: all $transition-normal;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, $primary-color, color.adjust($primary-color, $lightness: 20%));
+    opacity: 0;
+    transition: opacity $transition-fast;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3), 0 0 30px rgba($primary-color, 0.1);
+    border-color: rgba($primary-color, 0.3);
+
+    &::before {
+      opacity: 1;
+    }
+  }
 }
 
 .card-title {
-  font-size: 1.3rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 700;
   color: $text-color;
-  margin-bottom: $spacing-sm;
+  margin-bottom: $spacing-md;
+  position: relative;
+  padding-bottom: $spacing-sm;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(90deg, $primary-color, transparent);
+    border-radius: 2px;
+  }
 }
 
 .card-content {
