@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useDashboardLogic } from './Dashboard.logic';
 import ConfirmationModal from '@components/common/ConfirmationModal';
 import SettingsModal from '@components/common/SettingsModal';
@@ -9,6 +9,7 @@ import './Dashboard.scss';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     user,
     sidebarOpen,
@@ -52,10 +53,19 @@ const Dashboard: React.FC = () => {
         </div>
 
         <nav className="sidebar-nav">
-          <a href="/dashboard" className="nav-item active">
+          <Link 
+            to={ROUTES.DASHBOARD} 
+            className={`nav-item ${location.pathname === ROUTES.DASHBOARD ? 'active' : ''}`}
+            onClick={(e) => {
+              // Prevent navigation if already on dashboard
+              if (location.pathname === ROUTES.DASHBOARD) {
+                e.preventDefault();
+              }
+            }}
+          >
             <span className="nav-icon">📊</span>
             {sidebarOpen && <span className="nav-text">Dashboard</span>}
-          </a>
+          </Link>
         </nav>
 
         <div className="sidebar-footer">
