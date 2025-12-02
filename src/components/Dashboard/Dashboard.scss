@@ -90,6 +90,16 @@
   position: relative;
   overflow: hidden;
 
+  &.nav-button {
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+  }
+
   &::before {
     content: '';
     position: absolute;

@@ -13,6 +13,7 @@ export const useDashboardLogic = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showGenerateLobbyModal, setShowGenerateLobbyModal] = useState(false);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
   const [usersError, setUsersError] = useState<string | null>(null);
@@ -307,6 +308,8 @@ export const useDashboardLogic = () => {
     handleLogoutConfirm,
     showSettingsModal,
     setShowSettingsModal,
+    showGenerateLobbyModal,
+    setShowGenerateLobbyModal,
     users: users,
     usersLoading,
     usersError,

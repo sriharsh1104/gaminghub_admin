@@ -4,6 +4,7 @@ import { useDashboardLogic } from './Dashboard.logic';
 import ConfirmationModal from '@components/common/ConfirmationModal';
 import SettingsModal from '@components/common/SettingsModal';
 import ThemeToggle from '@components/common/ThemeToggle';
+import GenerateLobby from '@components/GenerateLobby/GenerateLobby';
 import { ROUTES } from '@utils/constants';
 import './Dashboard.scss';
 
@@ -19,6 +20,8 @@ const Dashboard: React.FC = () => {
     handleLogoutConfirm,
     showSettingsModal,
     setShowSettingsModal,
+    showGenerateLobbyModal,
+    setShowGenerateLobbyModal,
     users,
     usersLoading,
     usersError,
@@ -86,6 +89,14 @@ const Dashboard: React.FC = () => {
             <span className="nav-icon">📊</span>
             {sidebarOpen && <span className="nav-text">Dashboard</span>}
           </Link>
+          <button
+            className="nav-item nav-button"
+            onClick={() => setShowGenerateLobbyModal(true)}
+            title="Generate Next Day Lobby"
+          >
+            <span className="nav-icon">🎮</span>
+            {sidebarOpen && <span className="nav-text">Generate Lobby</span>}
+          </button>
         </nav>
 
         <div className="sidebar-footer">
@@ -384,6 +395,12 @@ const Dashboard: React.FC = () => {
       <SettingsModal
         isOpen={showSettingsModal}
         onClose={() => setShowSettingsModal(false)}
+      />
+
+      {/* Generate Lobby Modal */}
+      <GenerateLobby
+        isOpen={showGenerateLobbyModal}
+        onClose={() => setShowGenerateLobbyModal(false)}
       />
     </div>
   );
