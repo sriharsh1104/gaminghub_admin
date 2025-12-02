@@ -667,6 +667,16 @@
   );
   border-radius: $border-radius-md;
   border: 1px solid rgba(var(--primary-color-rgb), 0.3);
+  @include flex-between;
+  align-items: center;
+  gap: $spacing-lg;
+  flex-wrap: wrap;
+}
+
+.users-count-left {
+  @include flex-center;
+  gap: $spacing-md;
+  flex-wrap: wrap;
 }
 
 .users-count-text {
@@ -675,6 +685,121 @@
   font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.selected-count {
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 0.9rem;
+  padding: $spacing-xs $spacing-sm;
+  background: rgba(var(--primary-color-rgb), 0.2);
+  border-radius: $border-radius-sm;
+}
+
+.users-actions {
+  @include flex-center;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.select-all-checkbox {
+  @include flex-center;
+  gap: $spacing-sm;
+  cursor: pointer;
+  user-select: none;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $border-radius-md;
+  transition: all $transition-fast;
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 0.9rem;
+
+  &:hover {
+    background: rgba(var(--primary-color-rgb), 0.1);
+  }
+
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary-color);
+  }
+
+  span {
+    white-space: nowrap;
+  }
+}
+
+.action-buttons {
+  @include flex-center;
+  gap: $spacing-sm;
+}
+
+.action-button {
+  padding: $spacing-sm $spacing-lg;
+  border: 2px solid;
+  border-radius: $border-radius-md;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-fast;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+    &::before {
+      left: 100%;
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.block-button {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+  border-color: #dc2626;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+  }
+}
+
+.unblock-button {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: white;
+  border-color: #16a34a;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4);
+  }
 }
 
 .users-cards-container {
@@ -688,12 +813,15 @@
     var(--background-color-light) 0%,
     var(--background-color) 100%
   );
-  border: 1px solid rgba(var(--border-color-rgb), 0.5);
+  border: 2px solid rgba(var(--border-color-rgb), 0.5);
   border-radius: $border-radius-lg;
   padding: $spacing-lg;
   transition: all $transition-fast;
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-md;
 
   &::before {
     content: '';
@@ -715,6 +843,31 @@
     &::before {
       opacity: 1;
     }
+  }
+
+  &.selected {
+    border-color: var(--primary-color);
+    background: linear-gradient(135deg, 
+      rgba(var(--primary-color-rgb), 0.1) 0%,
+      rgba(var(--primary-color-rgb), 0.05) 100%
+    );
+    box-shadow: 0 4px 16px rgba(var(--primary-color-rgb), 0.2);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+}
+
+.user-card-checkbox {
+  flex-shrink: 0;
+  padding-top: $spacing-xs;
+
+  input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: var(--primary-color);
   }
 }
 
@@ -739,14 +892,129 @@
 .user-card-content {
   @include flex-column;
   gap: $spacing-md;
+  flex: 1;
 }
 
 .user-name,
-.user-email {
+.user-email,
+.user-status {
   display: flex;
   align-items: center;
   gap: $spacing-sm;
   flex-wrap: wrap;
+}
+
+.user-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.status-badge {
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $border-radius-sm;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.active {
+    background: rgba(22, 163, 74, 0.2);
+    color: #16a34a;
+  }
+
+  &.blocked {
+    background: rgba(220, 38, 38, 0.2);
+    color: #dc2626;
+  }
+}
+
+.user-action-buttons {
+  flex-shrink: 0;
+}
+
+.admin-badge {
+  padding: $spacing-xs $spacing-md;
+  border-radius: $border-radius-sm;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  border: 2px solid #f59e0b;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.user-action-button {
+  padding: $spacing-xs $spacing-md;
+  border: 2px solid;
+  border-radius: $border-radius-sm;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-fast;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+    &::before {
+      left: 100%;
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  &.block-button {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    color: white;
+    border-color: #dc2626;
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+    }
+  }
+
+  &.unblock-button {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    color: white;
+    border-color: #16a34a;
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4);
+    }
+  }
 }
 
 .user-label {

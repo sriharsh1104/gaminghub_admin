@@ -28,6 +28,17 @@ const Dashboard: React.FC = () => {
     userQuery,
     handleQueryChange,
     handleQueryUsers,
+    selectedUserIds,
+    handleUserSelect,
+    handleSelectAll,
+    isAllSelected,
+    handleBlockUsers,
+    handleUnblockUsers,
+    handleBlockSingleUser,
+    handleUnblockSingleUser,
+    isBlocking,
+    isUnblocking,
+    processingUserId,
   } = useDashboardLogic();
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -241,30 +252,112 @@ const Dashboard: React.FC = () => {
             ) : users.length > 0 ? (
               <div className="users-list">
                 <div className="users-count-header">
-                  <span className="users-count-text">
-                    {pagination ? (
-                      <>Total: {pagination.total} users</>
-                    ) : (
-                      <>Total: {users.length} users</>
+                  <div className="users-count-left">
+                    <span className="users-count-text">
+                      {pagination ? (
+                        <>Total: {pagination.total} users</>
+                      ) : (
+                        <>Total: {users.length} users</>
+                      )}
+                    </span>
+                    {selectedUserIds.size > 0 && (
+                      <span className="selected-count">
+                        ({selectedUserIds.size} selected)
+                      </span>
                     )}
-                  </span>
+                  </div>
+                  <div className="users-actions">
+                    <label className="select-all-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={isAllSelected}
+                        onChange={handleSelectAll}
+                        disabled={usersLoading}
+                      />
+                      <span>Select All</span>
+                    </label>
+                    {selectedUserIds.size > 0 && (
+                      <div className="action-buttons">
+                        <button
+                          className="action-button block-button"
+                          onClick={handleBlockUsers}
+                          disabled={isBlocking || isUnblocking || usersLoading}
+                        >
+                          {isBlocking ? 'Blocking...' : 'Block'}
+                        </button>
+                        <button
+                          className="action-button unblock-button"
+                          onClick={handleUnblockUsers}
+                          disabled={isBlocking || isUnblocking || usersLoading}
+                        >
+                          {isUnblocking ? 'Unblocking...' : 'Unblock'}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="users-cards-container">
-                  {users.map((adminUser, index) => (
-                    <div key={adminUser.userId || adminUser._id} className="user-card">
-                      <div className="user-card-number">{index + 1}</div>
-                      <div className="user-card-content">
-                        <div className="user-name">
-                          <span className="user-label">Name:</span>
-                          <span className="user-value">{adminUser.name || 'N/A'}</span>
+                  {users.map((adminUser, index) => {
+                    const userId = adminUser.userId || adminUser._id || '';
+                    const isSelected = userId && selectedUserIds.has(userId);
+                    return (
+                      <div key={userId} className={`user-card ${isSelected ? 'selected' : ''}`}>
+                        <div className="user-card-checkbox">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => handleUserSelect(userId)}
+                            disabled={usersLoading || adminUser.role?.toLowerCase() === 'admin'}
+                            title={adminUser.role?.toLowerCase() === 'admin' ? 'Admin users cannot be selected' : ''}
+                          />
                         </div>
-                        <div className="user-email">
-                          <span className="user-label">Email:</span>
-                          <span className="user-value">{adminUser.email}</span>
+                        <div className="user-card-number">{index + 1}</div>
+                        <div className="user-card-content">
+                          <div className="user-name">
+                            <span className="user-label">Name:</span>
+                            <span className="user-value">{adminUser.name || 'N/A'}</span>
+                          </div>
+                          <div className="user-email">
+                            <span className="user-label">Email:</span>
+                            <span className="user-value">{adminUser.email}</span>
+                          </div>
+                          <div className="user-status-row">
+                            <div className="user-status">
+                              <span className="user-label">Status:</span>
+                              <span className={`user-value status-badge ${adminUser.isBlocked ? 'blocked' : 'active'}`}>
+                                {adminUser.isBlocked ? 'Blocked' : 'Active'}
+                              </span>
+                            </div>
+                            <div className="user-action-buttons">
+                              {adminUser.role?.toLowerCase() === 'admin' ? (
+                                <span className="admin-badge" title="Admin users cannot be blocked">
+                                  Admin
+                                </span>
+                              ) : adminUser.isBlocked ? (
+                                <button
+                                  className="user-action-button unblock-button"
+                                  onClick={() => handleUnblockSingleUser(userId)}
+                                  disabled={processingUserId === userId || isBlocking || isUnblocking || usersLoading}
+                                  title="Unblock user"
+                                >
+                                  {processingUserId === userId ? 'Unblocking...' : 'Unblock'}
+                                </button>
+                              ) : (
+                                <button
+                                  className="user-action-button block-button"
+                                  onClick={() => handleBlockSingleUser(userId)}
+                                  disabled={processingUserId === userId || isBlocking || isUnblocking || usersLoading}
+                                  title="Block user"
+                                >
+                                  {processingUserId === userId ? 'Blocking...' : 'Block'}
+                                </button>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ) : (

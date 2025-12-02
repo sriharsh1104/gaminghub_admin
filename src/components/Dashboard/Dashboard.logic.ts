@@ -19,7 +19,10 @@ export const useDashboardLogic = () => {
   const [pagination, setPagination] = useState<{ page: number; total: number; totalPages: number } | null>(null);
   const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'host' | 'user'>('admin');
   const [userQuery, setUserQuery] = useState<string>('');
-  const [filteredUsers, setFilteredUsers] = useState<AdminUser[]>([]);
+  const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set());
+  const [isBlocking, setIsBlocking] = useState(false);
+  const [isUnblocking, setIsUnblocking] = useState(false);
+  const [processingUserId, setProcessingUserId] = useState<string | null>(null);
 
   useEffect(() => {
     // Check authentication from Redux
@@ -47,7 +50,7 @@ export const useDashboardLogic = () => {
     loadUser();
   }, [navigate, isAuthenticated, user, dispatch]);
 
-  // Load users list based on role filter
+  // Load users list based on role filter (without query - query only on button click)
   useEffect(() => {
     if (!isAuthenticated) return;
 
@@ -55,8 +58,10 @@ export const useDashboardLogic = () => {
       setUsersLoading(true);
       setUsersError(null);
       try {
-        // If filter is 'all', don't pass role parameter
+        // If filter is 'all', don't pass role parameter (searches entire DB)
+        // If filter is specific role, pass role parameter (searches only that role)
         const role = roleFilter === 'all' ? undefined : roleFilter;
+        // Don't pass query here - only load users by role
         const result = await usersApi.getUsers(role);
         setUsers(result.users);
         if (result.pagination) {
@@ -82,22 +87,6 @@ export const useDashboardLogic = () => {
     loadUsers();
   }, [isAuthenticated, roleFilter]);
 
-  // Filter users based on query
-  useEffect(() => {
-    if (!userQuery.trim()) {
-      setFilteredUsers(users);
-      return;
-    }
-
-    const query = userQuery.toLowerCase().trim();
-    const filtered = users.filter((user) => {
-      const email = user.email?.toLowerCase() || '';
-      const name = user.name?.toLowerCase() || '';
-      return email.includes(query) || name.includes(query);
-    });
-    setFilteredUsers(filtered);
-  }, [users, userQuery]);
-
   const handleLogoutConfirm = async () => {
     try {
       await authApi.logout();
@@ -116,18 +105,198 @@ export const useDashboardLogic = () => {
 
   const handleRoleFilterChange = (filter: 'all' | 'admin' | 'host' | 'user') => {
     setRoleFilter(filter);
+    setSelectedUserIds(new Set()); // Clear selection when filter changes
   };
 
-  const handleQueryUsers = () => {
-    // Query is handled by the useEffect that filters users
-    // This function can be used to trigger search or reset
+  const handleQueryUsers = async () => {
+    if (!isAuthenticated) return;
+
+    setUsersLoading(true);
+    setUsersError(null);
+    try {
+      // If filter is 'all', don't pass role parameter (searches entire DB)
+      // If filter is specific role, pass role parameter (searches only that role)
+      const role = roleFilter === 'all' ? undefined : roleFilter;
+      const query = userQuery.trim() || undefined;
+      const result = await usersApi.getUsers(role, query);
+      setUsers(result.users);
+      if (result.pagination) {
+        setPagination({
+          page: result.pagination.page,
+          total: result.pagination.total,
+          totalPages: result.pagination.totalPages,
+        });
+      }
+    } catch (error: any) {
+      console.error('Failed to search users:', error);
+      // Show specific error message if format is wrong
+      if (error?.message?.includes('Invalid API response format')) {
+        setUsersError(`API Format Error: ${error.message}. Please check the API response structure.`);
+      } else {
+        setUsersError(error?.message || 'Failed to search users');
+      }
+    } finally {
+      setUsersLoading(false);
+    }
   };
 
   const handleQueryChange = (query: string) => {
     setUserQuery(query);
   };
 
-  const displayUsers = userQuery.trim() ? filteredUsers : users;
+  const handleUserSelect = (userId: string) => {
+    setSelectedUserIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(userId)) {
+        newSet.delete(userId);
+      } else {
+        newSet.add(userId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleSelectAll = () => {
+    // Exclude admin users from selection
+    const allUserIds = users
+      .filter((u) => u.role?.toLowerCase() !== 'admin')
+      .map((u) => u.userId || u._id)
+      .filter((id): id is string => Boolean(id));
+
+    if (selectedUserIds.size === allUserIds.length && allUserIds.length > 0) {
+      // Deselect all
+      setSelectedUserIds(new Set());
+    } else {
+      // Select all (excluding admins)
+      setSelectedUserIds(new Set(allUserIds));
+    }
+  };
+
+  const handleBlockUsers = async () => {
+    if (selectedUserIds.size === 0) return;
+
+    setIsBlocking(true);
+    try {
+      // Filter out admin users from the list to block
+      const userIds = Array.from(selectedUserIds).filter((id) => {
+        const user = users.find((u) => (u.userId || u._id) === id);
+        return user && user.role?.toLowerCase() !== 'admin';
+      });
+
+      if (userIds.length === 0) {
+        setUsersError('Cannot block admin users');
+        setIsBlocking(false);
+        return;
+      }
+
+      await usersApi.blockUsers(userIds);
+      // Clear selection and reload users
+      setSelectedUserIds(new Set());
+      // Reload users list with current filters
+      const role = roleFilter === 'all' ? undefined : roleFilter;
+      const query = userQuery.trim() || undefined;
+      const result = await usersApi.getUsers(role, query);
+      setUsers(result.users);
+      if (result.pagination) {
+        setPagination({
+          page: result.pagination.page,
+          total: result.pagination.total,
+          totalPages: result.pagination.totalPages,
+        });
+      }
+    } catch (error: any) {
+      console.error('Failed to block users:', error);
+      setUsersError(error?.message || 'Failed to block users');
+    } finally {
+      setIsBlocking(false);
+    }
+  };
+
+  const handleUnblockUsers = async () => {
+    if (selectedUserIds.size === 0) return;
+
+    setIsUnblocking(true);
+    try {
+      const userIds = Array.from(selectedUserIds);
+      await usersApi.unblockUsers(userIds);
+      // Clear selection and reload users
+      setSelectedUserIds(new Set());
+      // Reload users list with current filters
+      const role = roleFilter === 'all' ? undefined : roleFilter;
+      const query = userQuery.trim() || undefined;
+      const result = await usersApi.getUsers(role, query);
+      setUsers(result.users);
+      if (result.pagination) {
+        setPagination({
+          page: result.pagination.page,
+          total: result.pagination.total,
+          totalPages: result.pagination.totalPages,
+        });
+      }
+    } catch (error: any) {
+      console.error('Failed to unblock users:', error);
+      setUsersError(error?.message || 'Failed to unblock users');
+    } finally {
+      setIsUnblocking(false);
+    }
+  };
+
+  const handleBlockSingleUser = async (userId: string) => {
+    // Prevent blocking admin users
+    const user = users.find((u) => (u.userId || u._id) === userId);
+    if (user && user.role?.toLowerCase() === 'admin') {
+      setUsersError('Cannot block admin users');
+      return;
+    }
+
+    setProcessingUserId(userId);
+    try {
+      await usersApi.blockUsers([userId]);
+      // Reload users list with current filters
+      const role = roleFilter === 'all' ? undefined : roleFilter;
+      const query = userQuery.trim() || undefined;
+      const result = await usersApi.getUsers(role, query);
+      setUsers(result.users);
+      if (result.pagination) {
+        setPagination({
+          page: result.pagination.page,
+          total: result.pagination.total,
+          totalPages: result.pagination.totalPages,
+        });
+      }
+    } catch (error: any) {
+      console.error('Failed to block user:', error);
+      setUsersError(error?.message || 'Failed to block user');
+    } finally {
+      setProcessingUserId(null);
+    }
+  };
+
+  const handleUnblockSingleUser = async (userId: string) => {
+    setProcessingUserId(userId);
+    try {
+      await usersApi.unblockUsers([userId]);
+      // Reload users list with current filters
+      const role = roleFilter === 'all' ? undefined : roleFilter;
+      const query = userQuery.trim() || undefined;
+      const result = await usersApi.getUsers(role, query);
+      setUsers(result.users);
+      if (result.pagination) {
+        setPagination({
+          page: result.pagination.page,
+          total: result.pagination.total,
+          totalPages: result.pagination.totalPages,
+        });
+      }
+    } catch (error: any) {
+      console.error('Failed to unblock user:', error);
+      setUsersError(error?.message || 'Failed to unblock user');
+    } finally {
+      setProcessingUserId(null);
+    }
+  };
+
+  const isAllSelected = users.length > 0 && selectedUserIds.size === users.length;
 
   return {
     user,
@@ -138,7 +307,7 @@ export const useDashboardLogic = () => {
     handleLogoutConfirm,
     showSettingsModal,
     setShowSettingsModal,
-    users: displayUsers,
+    users: users,
     usersLoading,
     usersError,
     pagination,
@@ -147,6 +316,17 @@ export const useDashboardLogic = () => {
     userQuery,
     handleQueryChange,
     handleQueryUsers,
+    selectedUserIds,
+    handleUserSelect,
+    handleSelectAll,
+    isAllSelected,
+    handleBlockUsers,
+    handleUnblockUsers,
+    handleBlockSingleUser,
+    handleUnblockSingleUser,
+    isBlocking,
+    isUnblocking,
+    processingUserId,
   };
 };
 
