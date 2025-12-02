@@ -6,6 +6,7 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',
   HEALTH: '/health',
   PROFILE: '/profile',
+  GENERATE_LOBBY: '/generate-lobby',
 } as const;
 
 export const STORAGE_KEYS = {

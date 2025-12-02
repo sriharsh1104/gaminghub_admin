@@ -4,7 +4,6 @@ import { useDashboardLogic } from './Dashboard.logic';
 import ConfirmationModal from '@components/common/ConfirmationModal';
 import SettingsModal from '@components/common/SettingsModal';
 import ThemeToggle from '@components/common/ThemeToggle';
-import GenerateLobby from '@components/GenerateLobby/GenerateLobby';
 import { ROUTES } from '@utils/constants';
 import './Dashboard.scss';
 
@@ -20,8 +19,6 @@ const Dashboard: React.FC = () => {
     handleLogoutConfirm,
     showSettingsModal,
     setShowSettingsModal,
-    showGenerateLobbyModal,
-    setShowGenerateLobbyModal,
     users,
     usersLoading,
     usersError,
@@ -89,14 +86,19 @@ const Dashboard: React.FC = () => {
             <span className="nav-icon">📊</span>
             {sidebarOpen && <span className="nav-text">Dashboard</span>}
           </Link>
-          <button
-            className="nav-item nav-button"
-            onClick={() => setShowGenerateLobbyModal(true)}
-            title="Generate Next Day Lobby"
+          <Link 
+            to={ROUTES.GENERATE_LOBBY} 
+            className={`nav-item ${location.pathname === ROUTES.GENERATE_LOBBY ? 'active' : ''}`}
+            onClick={(e) => {
+              // Prevent navigation if already on generate lobby page
+              if (location.pathname === ROUTES.GENERATE_LOBBY) {
+                e.preventDefault();
+              }
+            }}
           >
             <span className="nav-icon">🎮</span>
             {sidebarOpen && <span className="nav-text">Generate Lobby</span>}
-          </button>
+          </Link>
         </nav>
 
         <div className="sidebar-footer">
@@ -310,7 +312,7 @@ const Dashboard: React.FC = () => {
                 <div className="users-cards-container">
                   {users.map((adminUser, index) => {
                     const userId = adminUser.userId || adminUser._id || '';
-                    const isSelected = userId && selectedUserIds.has(userId);
+                    const isSelected = Boolean(userId && selectedUserIds.has(userId));
                     return (
                       <div key={userId} className={`user-card ${isSelected ? 'selected' : ''}`}>
                         <div className="user-card-checkbox">
@@ -397,11 +399,6 @@ const Dashboard: React.FC = () => {
         onClose={() => setShowSettingsModal(false)}
       />
 
-      {/* Generate Lobby Modal */}
-      <GenerateLobby
-        isOpen={showGenerateLobbyModal}
-        onClose={() => setShowGenerateLobbyModal(false)}
-      />
     </div>
   );
 };

@@ -13,12 +13,11 @@ export const useDashboardLogic = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [showGenerateLobbyModal, setShowGenerateLobbyModal] = useState(false);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
   const [usersError, setUsersError] = useState<string | null>(null);
   const [pagination, setPagination] = useState<{ page: number; total: number; totalPages: number } | null>(null);
-  const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'host' | 'user'>('admin');
+  const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'host' | 'user'>('all');
   const [userQuery, setUserQuery] = useState<string>('');
   const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set());
   const [isBlocking, setIsBlocking] = useState(false);
@@ -73,6 +72,10 @@ export const useDashboardLogic = () => {
           });
         }
       } catch (error: any) {
+        // Ignore axios cancel errors (request deduplication)
+        if (error?.message?.includes('cancelled') || error?.name === 'CanceledError' || error?.code === 'ERR_CANCELED') {
+          return; // Silently ignore cancelled requests
+        }
         console.error('Failed to load users:', error);
         // Show specific error message if format is wrong
         if (error?.message?.includes('Invalid API response format')) {
@@ -129,6 +132,10 @@ export const useDashboardLogic = () => {
         });
       }
     } catch (error: any) {
+      // Ignore axios cancel errors (request deduplication)
+      if (error?.message?.includes('cancelled') || error?.name === 'CanceledError' || error?.code === 'ERR_CANCELED') {
+        return; // Silently ignore cancelled requests
+      }
       console.error('Failed to search users:', error);
       // Show specific error message if format is wrong
       if (error?.message?.includes('Invalid API response format')) {
@@ -308,8 +315,6 @@ export const useDashboardLogic = () => {
     handleLogoutConfirm,
     showSettingsModal,
     setShowSettingsModal,
-    showGenerateLobbyModal,
-    setShowGenerateLobbyModal,
     users: users,
     usersLoading,
     usersError,

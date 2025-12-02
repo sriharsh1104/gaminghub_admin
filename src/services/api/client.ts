@@ -28,8 +28,10 @@ apiClient.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Request deduplication - cancel duplicate requests within 100ms
-    const requestKey = `${config.method?.toUpperCase()}_${config.url}`;
+    // Request deduplication - cancel duplicate requests within 200ms
+    // Include query params in key to differentiate requests with different params
+    const paramsString = config.params ? JSON.stringify(config.params) : '';
+    const requestKey = `${config.method?.toUpperCase()}_${config.url}_${paramsString}`;
     const existingRequest = pendingRequests.get(requestKey);
 
     if (existingRequest) {
@@ -49,7 +51,7 @@ apiClient.interceptors.request.use(
     // Clean up after request completes (with delay to handle rapid duplicates)
     setTimeout(() => {
       pendingRequests.delete(requestKey);
-    }, 100);
+    }, 200);
 
     return config;
   },

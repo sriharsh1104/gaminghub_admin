@@ -5,12 +5,15 @@ import './GenerateLobby.scss';
 interface GenerateLobbyProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
-const GenerateLobby: React.FC<GenerateLobbyProps> = ({ isOpen, onClose }) => {
+const GenerateLobby: React.FC<GenerateLobbyProps> = ({ isOpen, onClose, onSuccess }) => {
   const {
     isSubmitting,
     error,
+    fieldErrors,
+    getFieldError,
     success,
     formData,
     setFormData,
@@ -30,16 +33,20 @@ const GenerateLobby: React.FC<GenerateLobbyProps> = ({ isOpen, onClose }) => {
     await handleSubmit(e);
   };
 
-  // Close modal after successful submission
+  // Close modal after successful submission and refresh tournaments
   useEffect(() => {
     if (success) {
+      // Refresh tournaments list when lobby is generated successfully
+      if (onSuccess) {
+        onSuccess();
+      }
       const timer = setTimeout(() => {
         closeModal();
         onClose();
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [success, closeModal, onClose]);
+  }, [success, closeModal, onClose, onSuccess]);
 
   const [selectedHour, setSelectedHour] = useState('12');
   const [isAM, setIsAM] = useState(true);
@@ -57,6 +64,7 @@ const GenerateLobby: React.FC<GenerateLobbyProps> = ({ isOpen, onClose }) => {
   const subModes = ['solo', 'duo', 'squad'];
   const regions = ['Asia', 'Europe', 'North America', 'South America', 'Africa', 'Oceania'];
   const timeHours = ['12', '3', '6', '9'];
+  const priceOptions = [25, 50, 75, 100, 150, 200, 300];
 
   if (!isOpen) return null;
 
@@ -85,12 +93,19 @@ const GenerateLobby: React.FC<GenerateLobbyProps> = ({ isOpen, onClose }) => {
               <label className="form-label">Select Date</label>
               <input
                 type="date"
-                className="form-input form-date-input"
+                className={`form-input form-date-input ${getFieldError('dateType').length > 0 ? 'form-input-error' : ''}`}
                 value={formData.dateType}
                 onChange={(e) => setFormData({ ...formData, dateType: e.target.value })}
                 disabled={isSubmitting}
                 min={new Date().toISOString().split('T')[0]}
               />
+              {getFieldError('dateType').length > 0 && (
+                <div className="field-error">
+                  {getFieldError('dateType').map((err, idx) => (
+                    <div key={idx} className="field-error-message">{err}</div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Time Slots */}
@@ -138,29 +153,54 @@ const GenerateLobby: React.FC<GenerateLobbyProps> = ({ isOpen, onClose }) => {
               </div>
               {formData.timeSlots.length > 0 && (
                 <div className="time-slots-list">
-                  {formData.timeSlots.map((slot, index) => (
-                    <div key={index} className="time-slot-tag">
-                      <span>{slot}</span>
-                      <button
-                        type="button"
-                        className="remove-time-slot-button"
-                        onClick={() => handleTimeSlotRemove(slot)}
-                        disabled={isSubmitting}
-                        aria-label={`Remove ${slot}`}
-                      >
-                        ×
-                      </button>
-                    </div>
+                  {formData.timeSlots.map((slot, index) => {
+                    const slotErrors = getFieldError('timeSlots', index);
+                    return (
+                      <div key={index} className={`time-slot-tag ${slotErrors.length > 0 ? 'time-slot-tag-error' : ''}`}>
+                        <span>{slot}</span>
+                        <button
+                          type="button"
+                          className="remove-time-slot-button"
+                          onClick={() => handleTimeSlotRemove(slot)}
+                          disabled={isSubmitting}
+                          aria-label={`Remove ${slot}`}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {/* Display general timeSlots errors (not specific to an index) */}
+              {getFieldError('timeSlots').length > 0 && (
+                <div className="field-error">
+                  {getFieldError('timeSlots').map((err, idx) => (
+                    <div key={idx} className="field-error-message">{err}</div>
                   ))}
                 </div>
               )}
+              {/* Display errors for specific time slot indices */}
+              {formData.timeSlots.map((slot, index) => {
+                const slotErrors = getFieldError('timeSlots', index);
+                if (slotErrors.length === 0) return null;
+                return (
+                  <div key={`error-${index}`} className="field-error">
+                    {slotErrors.map((err, idx) => (
+                      <div key={idx} className="field-error-message">
+                        {slot}: {err}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
             </div>
 
             {/* Game Mode */}
             <div className="form-group">
               <label className="form-label">Game Mode</label>
               <select
-                className="form-select"
+                className={`form-select ${getFieldError('mode').length > 0 ? 'form-input-error' : ''}`}
                 value={formData.mode}
                 onChange={(e) => setFormData({ ...formData, mode: e.target.value })}
                 disabled={isSubmitting}
@@ -171,6 +211,13 @@ const GenerateLobby: React.FC<GenerateLobbyProps> = ({ isOpen, onClose }) => {
                   </option>
                 ))}
               </select>
+              {getFieldError('mode').length > 0 && (
+                <div className="field-error">
+                  {getFieldError('mode').map((err, idx) => (
+                    <div key={idx} className="field-error-message">{err}</div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Sub Modes */}
@@ -189,13 +236,20 @@ const GenerateLobby: React.FC<GenerateLobbyProps> = ({ isOpen, onClose }) => {
                   </label>
                 ))}
               </div>
+              {getFieldError('subModes').length > 0 && (
+                <div className="field-error">
+                  {getFieldError('subModes').map((err, idx) => (
+                    <div key={idx} className="field-error-message">{err}</div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Region */}
             <div className="form-group">
               <label className="form-label">Region</label>
               <select
-                className="form-select"
+                className={`form-select ${getFieldError('region').length > 0 ? 'form-input-error' : ''}`}
                 value={formData.region}
                 onChange={(e) => setFormData({ ...formData, region: e.target.value })}
                 disabled={isSubmitting}
@@ -206,10 +260,41 @@ const GenerateLobby: React.FC<GenerateLobbyProps> = ({ isOpen, onClose }) => {
                   </option>
                 ))}
               </select>
+              {getFieldError('region').length > 0 && (
+                <div className="field-error">
+                  {getFieldError('region').map((err, idx) => (
+                    <div key={idx} className="field-error-message">{err}</div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* Error Message */}
-            {error && (
+            {/* Price */}
+            <div className="form-group">
+              <label className="form-label">Price</label>
+              <select
+                className={`form-select ${getFieldError('price').length > 0 ? 'form-input-error' : ''}`}
+                value={formData.price}
+                onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                disabled={isSubmitting}
+              >
+                {priceOptions.map((price) => (
+                  <option key={price} value={price}>
+                    ₹{price}
+                  </option>
+                ))}
+              </select>
+              {getFieldError('price').length > 0 && (
+                <div className="field-error">
+                  {getFieldError('price').map((err, idx) => (
+                    <div key={idx} className="field-error-message">{err}</div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* General Error Message (only if no field-specific errors) */}
+            {error && Object.keys(fieldErrors).length === 0 && (
               <div className="form-message form-error">
                 <span className="message-icon">⚠️</span>
                 <span>{error}</span>
