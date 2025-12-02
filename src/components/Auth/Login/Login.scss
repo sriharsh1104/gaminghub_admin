@@ -6,9 +6,9 @@
   @include flex-center;
   min-height: 100vh;
   background: linear-gradient(135deg, 
-    color.adjust($background-color, $lightness: -8%) 0%, 
-    $background-color 50%,
-    color.adjust($background-color, $lightness: -5%) 100%
+    var(--background-color-dark) 0%, 
+    var(--background-color) 50%,
+    var(--background-color-dark) 100%
   );
   padding: $spacing-md;
   position: relative;
@@ -22,7 +22,7 @@
     right: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba($primary-color, 0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(var(--primary-color-rgb), 0.1) 0%, transparent 70%);
     animation: rotate 20s linear infinite;
   }
 
@@ -33,7 +33,7 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba($primary-color, 0.05) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(var(--primary-color-rgb), 0.05) 0%, transparent 70%);
     animation: rotate 25s linear infinite reverse;
   }
 }
@@ -51,14 +51,14 @@
   @include card;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba($primary-color, 0.1);
-  border: 1px solid rgba($primary-color, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(var(--primary-color-rgb), 0.1);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   position: relative;
   z-index: 1;
   backdrop-filter: blur(10px);
   background: linear-gradient(135deg, 
-    color.adjust($background-color, $lightness: 2%) 0%,
-    $background-color 100%
+    var(--background-color-light) 0%,
+    var(--background-color) 100%
   );
   animation: slideUp 0.5s ease;
 }
@@ -77,7 +77,7 @@
 .login-title {
   font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: 20%) 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-light) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -87,7 +87,7 @@
 }
 
 .login-subtitle {
-  color: $text-secondary;
+  color: var(--text-secondary);
   text-align: center;
   margin-bottom: $spacing-xl;
   font-size: 1rem;
@@ -108,35 +108,37 @@
 .form-label {
   font-size: 0.95rem;
   font-weight: 600;
-  color: $text-color;
+  color: var(--text-color);
   margin-bottom: $spacing-xs;
 }
 
 .form-input {
   @include input-base;
-  border: 2px solid $border-color;
+  border: 2px solid var(--border-color);
   padding: $spacing-md $spacing-lg;
   font-size: 1rem;
   transition: all $transition-fast;
-  background: color.adjust($background-color, $lightness: 2%);
+  background: var(--background-color-light);
 
   &:focus {
-    border-color: $primary-color;
-    box-shadow: 0 0 0 4px rgba($primary-color, 0.1), 0 4px 12px rgba($primary-color, 0.2);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(var(--primary-color-rgb), 0.1), 0 4px 12px rgba(var(--primary-color-rgb), 0.2);
     transform: translateY(-1px);
   }
 
   &:hover:not(:focus) {
-    border-color: color.adjust($border-color, $lightness: 10%);
+    border-color: var(--border-color);
+    opacity: 0.8;
+    filter: brightness(1.2);
   }
 }
 
 .error-message {
   padding: $spacing-md;
-  background: linear-gradient(135deg, rgba($error-color, 0.15) 0%, rgba($error-color, 0.1) 100%);
-  border: 2px solid rgba($error-color, 0.3);
+  background: linear-gradient(135deg, rgba(var(--error-color), 0.15) 0%, rgba(var(--error-color), 0.1) 100%);
+  border: 2px solid rgba(var(--error-color), 0.3);
   border-radius: $border-radius-md;
-  color: $error-color;
+  color: var(--error-color);
   font-size: 0.9rem;
   text-align: center;
   font-weight: 500;
@@ -156,8 +158,8 @@
   font-size: 1.05rem;
   font-weight: 700;
   margin-top: $spacing-md;
-  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -5%) 100%);
-  box-shadow: 0 4px 15px rgba($primary-color, 0.4);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
+  box-shadow: 0 4px 15px rgba(var(--primary-color-rgb), 0.4);
   position: relative;
   overflow: hidden;
   text-transform: uppercase;
@@ -180,7 +182,7 @@
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba($primary-color, 0.5);
+    box-shadow: 0 6px 20px rgba(var(--primary-color-rgb), 0.5);
   }
 
   &:active {

@@ -28,15 +28,15 @@
 
 .modal-content {
   background: linear-gradient(135deg, 
-    color.adjust($background-color, $lightness: 2%) 0%,
-    $background-color 100%
+    var(--background-color-light) 0%,
+    var(--background-color) 100%
   );
-  border: 1px solid rgba($border-color, 0.5);
+  border: 1px solid rgba(var(--border-color-rgb), 0.5);
   border-radius: $border-radius-lg;
   padding: $spacing-xl;
   max-width: 420px;
   width: 90%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba($primary-color, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(var(--primary-color-rgb), 0.1);
   animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
   overflow: hidden;
@@ -48,7 +48,7 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, $primary-color, color.adjust($primary-color, $lightness: 20%));
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-color-light));
   }
 }
 
@@ -66,7 +66,7 @@
 .modal-title {
   font-size: 1.6rem;
   font-weight: 800;
-  background: linear-gradient(135deg, $text-color 0%, color.adjust($text-color, $lightness: -10%) 100%);
+  background: linear-gradient(135deg, var(--text-color) 0%, var(--text-color-dark) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -75,7 +75,7 @@
 }
 
 .modal-message {
-  color: $text-secondary;
+  color: var(--text-secondary);
   line-height: 1.6;
   margin-bottom: $spacing-xl;
 }
@@ -108,20 +108,20 @@
 
 .modal-button-cancel {
   background-color: transparent;
-  color: $text-secondary;
-  border: 1px solid $border-color;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
 
   &:hover {
-    background-color: rgba($text-secondary, 0.1);
-    color: $text-color;
+    background-color: rgba(var(--text-secondary), 0.1);
+    color: var(--text-color);
   }
 }
 
 .modal-button-confirm {
-  background: linear-gradient(135deg, $error-color 0%, color.adjust($error-color, $lightness: -10%) 100%);
-  color: $secondary-color;
+  background: linear-gradient(135deg, var(--error-color) 0%, var(--error-color-dark) 100%);
+  color: var(--secondary-color);
   font-weight: 600;
-  box-shadow: 0 4px 15px rgba($error-color, 0.4);
+  box-shadow: 0 4px 15px rgba(var(--error-color), 0.4);
   position: relative;
   overflow: hidden;
 
@@ -137,8 +137,8 @@
   }
 
   &:hover {
-    background: linear-gradient(135deg, color.adjust($error-color, $lightness: -5%) 0%, color.adjust($error-color, $lightness: -15%) 100%);
-    box-shadow: 0 6px 20px rgba($error-color, 0.5);
+    background: linear-gradient(135deg, var(--error-color-dark) 0%, var(--error-color-dark) 100%);
+    box-shadow: 0 6px 20px rgba(var(--error-color), 0.5);
     transform: translateY(-2px);
 
     &::before {

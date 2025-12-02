@@ -67,30 +67,32 @@
 
 @mixin button-primary {
   @include button-base;
-  background-color: $primary-color;
-  color: $background-color;
+  background-color: var(--primary-color);
+  color: var(--background-color);
   
   &:hover:not(:disabled) {
-    background-color: color.adjust($primary-color, $lightness: 10%);
+    background-color: var(--primary-color);
+    opacity: 0.9;
+    filter: brightness(1.1);
   }
 }
 
 @mixin button-secondary {
   @include button-base;
   background-color: transparent;
-  color: $text-color;
-  border: 1px solid $border-color;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
   
   &:hover:not(:disabled) {
-    border-color: $primary-color;
-    color: $primary-color;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
   }
 }
 
 // Card Mixins
 @mixin card {
-  background-color: $background-color;
-  border: 1px solid $border-color;
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
   border-radius: $border-radius-lg;
   padding: $spacing-lg;
   box-shadow: $shadow-sm;
@@ -100,21 +102,21 @@
 @mixin input-base {
   width: 100%;
   padding: $spacing-sm $spacing-md;
-  background-color: color.adjust($background-color, $lightness: -2%);
-  border: 1px solid $border-color;
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
   border-radius: $border-radius-md;
-  color: $text-color;
+  color: var(--text-color);
   font-size: 1rem;
   transition: all $transition-fast;
   
   &:focus {
     outline: none;
-    border-color: $primary-color;
-    box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb, 133, 234, 45), 0.1);
   }
   
   &::placeholder {
-    color: $text-secondary;
+    color: var(--text-secondary);
   }
 }
 

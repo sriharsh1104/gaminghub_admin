@@ -1,13 +1,17 @@
-// Color Variables
-$primary-color: #85ea2d;
-$secondary-color: #fff;
-$background-color: #1a1a1a;
-$text-color: #ffffff;
-$text-secondary: #b0b0b0;
-$border-color: #333333;
-$error-color: #ff4444;
-$success-color: #44ff44;
-$warning-color: #ffaa00;
+// Color Variables - Static values for SASS calculations
+// For runtime theme switching, use CSS variables (--primary-color, etc.) directly in component SCSS
+$primary-color-static: #85ea2d;
+$secondary-color-static: #fff;
+$background-color-static: #1a1a1a;
+$text-color-static: #ffffff;
+$text-secondary-static: #b0b0b0;
+$border-color-static: #333333;
+$error-color-static: #ff4444;
+$success-color-static: #44ff44;
+$warning-color-static: #ffaa00;
+
+// CSS Variable names (for reference)
+// Use these in component SCSS: var(--primary-color), var(--background-color), etc.
 
 // Spacing
 $spacing-xs: 0.25rem;

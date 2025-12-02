@@ -6,8 +6,8 @@
   @include flex-between;
   min-height: 100vh;
   background: linear-gradient(135deg, 
-    color.adjust($background-color, $lightness: -3%) 0%,
-    $background-color 100%
+    var(--background-color-dark) 0%,
+    var(--background-color) 100%
   );
   position: relative;
 }
@@ -18,10 +18,10 @@
   top: 0;
   height: 100vh;
   background: linear-gradient(180deg, 
-    color.adjust($background-color, $lightness: -5%) 0%,
-    color.adjust($background-color, $lightness: -3%) 100%
+    var(--background-color-dark) 0%,
+    var(--background-color-dark) 100%
   );
-  border-right: 1px solid rgba($border-color, 0.5);
+  border-right: 1px solid rgba(var(--border-color-rgb), 0.5);
   @include flex-column;
   transition: width $transition-normal;
   z-index: 1000;
@@ -41,14 +41,14 @@
 .sidebar-header {
   @include flex-between;
   padding: $spacing-lg;
-  border-bottom: 1px solid $border-color;
+  border-bottom: 1px solid var(--border-color);
   min-height: 70px;
 }
 
 .sidebar-logo {
   font-size: 1.3rem;
   font-weight: 800;
-  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: 20%) 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-light) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -81,7 +81,7 @@
 .nav-item {
   @include flex-between;
   padding: $spacing-md $spacing-lg;
-  color: $text-secondary;
+  color: var(--text-secondary);
   text-decoration: none;
   transition: all $transition-fast;
   border-left: 3px solid transparent;
@@ -97,13 +97,13 @@
     top: 0;
     height: 100%;
     width: 0;
-    background: linear-gradient(90deg, rgba($primary-color, 0.1), transparent);
+    background: linear-gradient(90deg, rgba(var(--primary-color-rgb), 0.1), transparent);
     transition: width $transition-fast;
   }
 
   &:hover {
-    background: linear-gradient(90deg, rgba($primary-color, 0.15), rgba($primary-color, 0.05));
-    color: $primary-color;
+    background: linear-gradient(90deg, rgba(var(--primary-color-rgb), 0.15), rgba(var(--primary-color-rgb), 0.05));
+    color: var(--primary-color);
     transform: translateX(4px);
 
     &::before {
@@ -112,10 +112,10 @@
   }
 
   &.active {
-    background: linear-gradient(90deg, rgba($primary-color, 0.2), rgba($primary-color, 0.1));
-    color: $primary-color;
-    border-left-color: $primary-color;
-    box-shadow: -2px 0 10px rgba($primary-color, 0.3);
+    background: linear-gradient(90deg, rgba(var(--primary-color-rgb), 0.2), rgba(var(--primary-color-rgb), 0.1));
+    color: var(--primary-color);
+    border-left-color: var(--primary-color);
+    box-shadow: -2px 0 10px rgba(var(--primary-color-rgb), 0.3);
     font-weight: 600;
 
     &::before {
@@ -141,7 +141,7 @@
 
 .sidebar-footer {
   padding: $spacing-lg;
-  border-top: 1px solid $border-color;
+  border-top: 1px solid var(--border-color);
   @include flex-column;
   gap: $spacing-md;
 }
@@ -158,13 +158,13 @@
 
 .user-email {
   font-size: 0.9rem;
-  color: $text-color;
+  color: var(--text-color);
   font-weight: 500;
 }
 
 .user-name {
   font-size: 0.8rem;
-  color: $text-secondary;
+  color: var(--text-secondary);
 }
 
 .logout-button {
@@ -189,10 +189,10 @@
   @include flex-between;
   padding: $spacing-xl $spacing-lg;
   background: linear-gradient(135deg, 
-    color.adjust($background-color, $lightness: -4%) 0%,
-    color.adjust($background-color, $lightness: -2%) 100%
+    var(--background-color-dark) 0%,
+    var(--background-color) 100%
   );
-  border-bottom: 1px solid rgba($border-color, 0.5);
+  border-bottom: 1px solid rgba(var(--border-color-rgb), 0.5);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   position: sticky;
@@ -207,7 +207,7 @@
   h1 {
     font-size: 2rem;
     font-weight: 800;
-    background: linear-gradient(135deg, $text-color 0%, color.adjust($text-color, $lightness: -10%) 100%);
+    background: linear-gradient(135deg, var(--text-color) 0%, var(--text-color-dark) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -246,15 +246,15 @@
     width: 0;
     height: 0;
     border-radius: 50%;
-    background: rgba($primary-color, 0.2);
+    background: rgba(var(--primary-color-rgb), 0.2);
     transform: translate(-50%, -50%);
     transition: width 0.3s ease, height 0.3s ease;
   }
 
   &:hover {
-    background-color: rgba($primary-color, 0.1);
+    background-color: rgba(var(--primary-color-rgb), 0.1);
     transform: scale(1.05) rotate(90deg);
-    border-color: $primary-color;
+    border-color: var(--primary-color);
 
     &::before {
       width: 100%;
@@ -277,12 +277,12 @@
   top: calc(100% + $spacing-sm);
   right: 0;
   background: linear-gradient(135deg, 
-    color.adjust($background-color, $lightness: 2%) 0%,
-    $background-color 100%
+    var(--background-color-light) 0%,
+    var(--background-color) 100%
   );
-  border: 1px solid rgba($border-color, 0.5);
+  border: 1px solid rgba(var(--border-color-rgb), 0.5);
   border-radius: $border-radius-lg;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 20px rgba($primary-color, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 20px rgba(var(--primary-color-rgb), 0.1);
   min-width: 220px;
   opacity: 0;
   visibility: hidden;
@@ -299,7 +299,7 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, $primary-color, color.adjust($primary-color, $lightness: 20%));
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-color-light));
     opacity: 0;
     transition: opacity $transition-fast;
   }
@@ -321,7 +321,7 @@
   padding: $spacing-md $spacing-lg;
   background: none;
   border: none;
-  color: $text-color;
+  color: var(--text-color);
   text-align: left;
   cursor: pointer;
   transition: all $transition-fast;
@@ -337,13 +337,13 @@
     top: 0;
     height: 100%;
     width: 3px;
-    background: linear-gradient(180deg, $primary-color, color.adjust($primary-color, $lightness: 20%));
+    background: linear-gradient(180deg, var(--primary-color), var(--primary-color-light));
     transform: scaleY(0);
     transition: transform $transition-fast;
   }
 
   &:hover {
-    background: linear-gradient(90deg, rgba($primary-color, 0.15), rgba($primary-color, 0.05));
+    background: linear-gradient(90deg, rgba(var(--primary-color-rgb), 0.15), rgba(var(--primary-color-rgb), 0.05));
     padding-left: $spacing-xl;
     transform: translateX(4px);
 
@@ -368,7 +368,7 @@
 
   &.dropdown-item-info {
     cursor: default;
-    border-top: 1px solid $border-color;
+    border-top: 1px solid var(--border-color);
     padding-top: $spacing-md;
     margin-top: $spacing-xs;
 
@@ -391,13 +391,13 @@
 
 .dropdown-item-name {
   font-weight: 600;
-  color: $text-color;
+  color: var(--text-color);
   font-size: 0.9rem;
 }
 
 .dropdown-item-email {
   font-size: 0.8rem;
-  color: $text-secondary;
+  color: var(--text-secondary);
 }
 
 .dashboard-content {
@@ -412,11 +412,11 @@
   @include flex-column;
   gap: $spacing-md;
   background: linear-gradient(135deg, 
-    color.adjust($background-color, $lightness: 2%) 0%,
-    $background-color 100%
+    var(--background-color-light) 0%,
+    var(--background-color) 100%
   );
-  border: 1px solid rgba($border-color, 0.5);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 20px rgba($primary-color, 0.05);
+  border: 1px solid rgba(var(--border-color-rgb), 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 20px rgba(var(--primary-color-rgb), 0.05);
   transition: all $transition-normal;
   position: relative;
   overflow: hidden;
@@ -428,15 +428,15 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, $primary-color, color.adjust($primary-color, $lightness: 20%));
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-color-light));
     opacity: 0;
     transition: opacity $transition-fast;
   }
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3), 0 0 30px rgba($primary-color, 0.1);
-    border-color: rgba($primary-color, 0.3);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3), 0 0 30px rgba(var(--primary-color-rgb), 0.1);
+    border-color: rgba(var(--primary-color-rgb), 0.3);
 
     &::before {
       opacity: 1;
@@ -447,7 +447,7 @@
 .card-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: $text-color;
+  color: var(--text-color);
   margin-bottom: $spacing-md;
   position: relative;
   padding-bottom: $spacing-sm;
@@ -459,18 +459,18 @@
     left: 0;
     width: 50px;
     height: 3px;
-    background: linear-gradient(90deg, $primary-color, transparent);
+    background: linear-gradient(90deg, var(--primary-color), transparent);
     border-radius: 2px;
   }
 }
 
 .card-content {
-  color: $text-color;
+  color: var(--text-color);
   line-height: 1.6;
 }
 
 .card-content-secondary {
-  color: $text-secondary;
+  color: var(--text-secondary);
   font-size: 0.9rem;
   line-height: 1.6;
 }

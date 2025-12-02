@@ -8,8 +8,18 @@ interface ThemeState {
 
 // Load initial theme from localStorage or default to dark
 const getInitialTheme = (): Theme => {
-  const savedTheme = localStorage.getItem('theme') as Theme;
-  return savedTheme || 'dark';
+  try {
+    const savedTheme = localStorage.getItem('theme') as Theme;
+    // Only use saved theme if it's valid (light or dark)
+    if (savedTheme === 'light' || savedTheme === 'dark') {
+      return savedTheme;
+    }
+  } catch (error) {
+    // If localStorage is not available, default to dark
+    console.warn('localStorage not available, defaulting to dark theme');
+  }
+  // Default to dark theme
+  return 'dark';
 };
 
 const initialState: ThemeState = {

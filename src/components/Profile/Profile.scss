@@ -5,8 +5,8 @@
 .profile-container {
   min-height: 100vh;
   background: linear-gradient(135deg, 
-    color.adjust($background-color, $lightness: -3%) 0%,
-    $background-color 100%
+    var(--background-color-dark) 0%,
+    var(--background-color) 100%
   );
 }
 
@@ -14,10 +14,10 @@
   @include flex-between;
   padding: $spacing-xl $spacing-lg;
   background: linear-gradient(135deg, 
-    color.adjust($background-color, $lightness: -4%) 0%,
-    color.adjust($background-color, $lightness: -2%) 100%
+    var(--background-color-dark) 0%,
+    var(--background-color) 100%
   );
-  border-bottom: 1px solid rgba($border-color, 0.5);
+  border-bottom: 1px solid rgba(var(--border-color-rgb), 0.5);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   position: sticky;
@@ -37,7 +37,7 @@
   h1 {
     font-size: 2rem;
     font-weight: 800;
-    background: linear-gradient(135deg, $text-color 0%, color.adjust($text-color, $lightness: -10%) 100%);
+    background: linear-gradient(135deg, var(--text-color) 0%, var(--text-color-dark) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -60,11 +60,11 @@
   max-width: 600px;
   width: 100%;
   background: linear-gradient(135deg, 
-    color.adjust($background-color, $lightness: 2%) 0%,
-    $background-color 100%
+    var(--background-color-light) 0%,
+    var(--background-color) 100%
   );
-  border: 1px solid rgba($border-color, 0.5);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 20px rgba($primary-color, 0.05);
+  border: 1px solid rgba(var(--border-color-rgb), 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 20px rgba(var(--primary-color-rgb), 0.05);
   transition: all $transition-normal;
   position: relative;
   overflow: hidden;
@@ -76,21 +76,21 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, $primary-color, color.adjust($primary-color, $lightness: 20%));
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-color-light));
     opacity: 0.8;
   }
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3), 0 0 30px rgba($primary-color, 0.1);
-    border-color: rgba($primary-color, 0.3);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3), 0 0 30px rgba(var(--primary-color-rgb), 0.1);
+    border-color: rgba(var(--primary-color-rgb), 0.3);
   }
 }
 
 .card-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: $text-color;
+  color: var(--text-color);
   margin-bottom: $spacing-md;
   position: relative;
   padding-bottom: $spacing-sm;
@@ -102,7 +102,7 @@
     left: 0;
     width: 50px;
     height: 3px;
-    background: linear-gradient(90deg, $primary-color, transparent);
+    background: linear-gradient(90deg, var(--primary-color), transparent);
     border-radius: 2px;
   }
 }
@@ -115,13 +115,13 @@
 .profile-item {
   @include flex-between;
   padding: $spacing-md $spacing-sm;
-  border-bottom: 1px solid rgba($border-color, 0.5);
+  border-bottom: 1px solid rgba(var(--border-color-rgb), 0.5);
   border-radius: $border-radius-sm;
   transition: all $transition-fast;
   margin: $spacing-xs 0;
 
   &:hover {
-    background: rgba($primary-color, 0.05);
+    background: rgba(var(--primary-color-rgb), 0.05);
     padding-left: $spacing-md;
   }
 
@@ -131,25 +131,25 @@
 }
 
 .profile-label {
-  color: $text-secondary;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
 .profile-value {
-  color: $text-color;
+  color: var(--text-color);
   font-weight: 600;
 
   &.verified {
-    color: $success-color;
+    color: var(--success-color);
   }
 
   &.not-verified {
-    color: $error-color;
+    color: var(--error-color);
   }
 }
 
 .loading {
-  color: $text-secondary;
+  color: var(--text-secondary);
   padding: $spacing-md;
   text-align: center;
 }

@@ -22,13 +22,13 @@
     width: 0;
     height: 0;
     border-radius: 50%;
-    background: rgba($primary-color, 0.2);
+    background: rgba(var(--primary-color-rgb), 0.2);
     transform: translate(-50%, -50%);
     transition: width 0.3s ease, height 0.3s ease;
   }
 
   &:hover {
-    background-color: rgba($primary-color, 0.1);
+    background-color: rgba(var(--primary-color-rgb), 0.1);
     transform: scale(1.05);
 
     &::before {

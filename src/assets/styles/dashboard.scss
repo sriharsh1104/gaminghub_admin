@@ -32,15 +32,17 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: $background-color;
+  background: var(--background-color);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: $border-color;
+  background: var(--border-color);
   border-radius: 4px;
   
   &:hover {
-    background: color.adjust($border-color, $lightness: 10%);
+    background: var(--border-color);
+    opacity: 0.8;
+    filter: brightness(1.2);
   }
 }
 
