@@ -46,7 +46,8 @@ const GenerateLobby: React.FC<GenerateLobbyProps> = ({ isOpen, onClose, onSucces
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [success, closeModal, onClose, onSuccess]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [success]); // Only depend on success, not onSuccess to prevent loops
 
   const [selectedHour, setSelectedHour] = useState('12');
   const [isAM, setIsAM] = useState(true);
@@ -72,7 +73,7 @@ const GenerateLobby: React.FC<GenerateLobbyProps> = ({ isOpen, onClose, onSucces
     <div className="generate-lobby-modal-overlay" onClick={handleClose}>
       <div className="generate-lobby-modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="generate-lobby-modal-header">
-          <h3 className="generate-lobby-modal-title">Generate Next Day Lobby</h3>
+          <h3 className="generate-lobby-modal-title">Generate Lobby</h3>
           <button
             className="generate-lobby-modal-close"
             onClick={handleClose}

@@ -133,6 +133,8 @@
 .form-group {
   @include flex-column;
   gap: $spacing-sm;
+  width: 100%;
+  min-width: 0; // Prevent flex items from overflowing
 }
 
 .form-label {
@@ -182,18 +184,23 @@
 }
 
 .time-slots-input-group {
-  @include flex-center;
+  display: flex;
+  align-items: center;
   gap: $spacing-sm;
   flex-wrap: nowrap;
   width: 100%;
+  min-width: 0; // Prevent overflow
 }
 
 .time-hour-select {
   flex: 0 0 auto;
-  width: 85px;
-  min-width: 85px;
-  padding: $spacing-md $spacing-sm;
+  width: 120px;
+  min-width: 120px;
+  max-width: 120px;
+  padding: $spacing-md $spacing-lg;
   font-size: 0.95rem;
+  display: block; // Ensure visibility
+  visibility: visible; // Ensure visibility
 }
 
 .am-pm-toggle {
@@ -204,6 +211,8 @@
   padding: 2px;
   background: var(--background-color);
   flex: 0 0 auto;
+  visibility: visible; // Ensure visibility
+  min-width: 0; // Prevent overflow
 }
 
 .am-pm-button {
@@ -250,6 +259,9 @@
   transition: all $transition-fast;
   white-space: nowrap;
   flex: 0 0 auto;
+  display: block; // Ensure visibility
+  visibility: visible; // Ensure visibility
+  min-width: 60px; // Ensure minimum width
 
   &:hover:not(:disabled) {
     background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--primary-color) 100%);

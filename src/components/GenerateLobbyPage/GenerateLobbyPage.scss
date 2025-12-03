@@ -358,6 +358,110 @@
   margin-bottom: $spacing-md;
 }
 
+.tournaments-filters {
+  display: flex;
+  gap: $spacing-xl;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: $spacing-lg;
+  background: rgba(var(--background-color-rgb), 0.5);
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(var(--border-color-rgb), 0.3);
+  margin-bottom: $spacing-lg;
+}
+
+.filter-group {
+  @include flex-center;
+  gap: $spacing-md;
+  align-items: center;
+}
+
+.filter-label {
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.submode-filter-tabs {
+  display: flex;
+  gap: $spacing-xs;
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: $border-radius-md;
+  padding: $spacing-xs;
+}
+
+.submode-tab {
+  @include button-base;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: $spacing-sm $spacing-md;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: $border-radius-sm;
+  border: none;
+  cursor: pointer;
+  transition: all $transition-fast;
+  text-transform: capitalize;
+
+  &:hover:not(:disabled) {
+    background: rgba(var(--primary-color-rgb), 0.1);
+    color: var(--primary-color);
+    transform: none;
+    box-shadow: none;
+  }
+
+  &.active {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
+    color: var(--background-color);
+    box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.date-filter-input {
+  padding: $spacing-sm $spacing-md;
+  border: 2px solid var(--border-color);
+  border-radius: $border-radius-md;
+  background: var(--background-color);
+  color: var(--text-color);
+  font-size: 0.9rem;
+  transition: all $transition-fast;
+  font-family: inherit;
+  min-width: 150px;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.clear-date-button {
+  @include button-secondary;
+  padding: $spacing-xs $spacing-sm;
+  min-width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  margin-left: $spacing-xs;
+}
+
 .tournaments-header .card-title {
   font-size: 1.5rem;
   font-weight: 700;
@@ -589,5 +693,71 @@
   background: rgba(var(--background-color-rgb), 0.5);
   padding: $spacing-xs $spacing-sm;
   border-radius: $border-radius-sm;
+}
+
+.tournament-actions {
+  display: flex;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1px solid rgba(var(--border-color-rgb), 0.3);
+}
+
+.tournament-action-button {
+  @include flex-center;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
+  border: 2px solid;
+  border-radius: $border-radius-md;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-fast;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex: 1;
+
+  .action-icon {
+    font-size: 1rem;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.tournament-edit-button {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+  border-color: rgba(59, 130, 246, 0.5);
+  color: #3b82f6;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
+    border-color: #3b82f6;
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+  }
+}
+
+.tournament-delete-button {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(220, 38, 38, 0.05));
+  border-color: rgba(220, 38, 38, 0.5);
+  color: #dc2626;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.2), rgba(220, 38, 38, 0.1));
+    border-color: #dc2626;
+    box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
+  }
 }
 

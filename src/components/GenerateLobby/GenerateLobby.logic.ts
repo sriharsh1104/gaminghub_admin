@@ -194,7 +194,7 @@ export const useGenerateLobbyLogic = () => {
       }
       else {
         // Generic error
-        setError(err?.message || 'Failed to generate lobbies. Please try again.');
+      setError(err?.message || 'Failed to generate lobbies. Please try again.');
         setFieldErrors({});
       }
     } finally {

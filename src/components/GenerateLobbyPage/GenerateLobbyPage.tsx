@@ -2,6 +2,8 @@ import { useLocation, Link } from 'react-router-dom';
 import { useGenerateLobbyPageLogic } from './GenerateLobbyPage.logic';
 import ThemeToggle from '@components/common/ThemeToggle';
 import GenerateLobby from '@components/GenerateLobby/GenerateLobby';
+import EditTournament from '@components/EditTournament/EditTournament';
+import ConfirmationModal from '@components/common/ConfirmationModal';
 import { ROUTES } from '@utils/constants';
 import './GenerateLobbyPage.scss';
 
@@ -15,10 +17,28 @@ const GenerateLobbyPage: React.FC = () => {
     setShowGenerateLobbyModal,
     tournamentStatus,
     setTournamentStatus,
+    subModeFilter,
+    setSubModeFilter,
+    selectedDate,
+    setSelectedDate,
     tournaments,
     tournamentsLoading,
     tournamentsError,
     refreshTournaments,
+    editingTournament,
+    showEditModal,
+    setShowEditModal,
+    setEditingTournament,
+    handleEditTournament,
+    handleUpdateTournament,
+    isUpdating,
+    showDeleteModal,
+    setShowDeleteModal,
+    tournamentToDelete,
+    setTournamentToDelete,
+    openDeleteModal,
+    handleDeleteTournament,
+    isDeleting,
   } = useGenerateLobbyPageLogic();
 
   return (
@@ -86,7 +106,7 @@ const GenerateLobbyPage: React.FC = () => {
 
       <div className="generate-lobby-page-content">
         <div className="generate-lobby-page-card">
-          <h2 className="card-title">Generate Next Day Lobby</h2>
+          <h2 className="card-title">Generate  Lobby</h2>
           <p className="card-description">
             Create and configure lobbies for the next day. Select date, time slots, game mode, sub modes, and region.
           </p>
@@ -130,6 +150,65 @@ const GenerateLobbyPage: React.FC = () => {
               >
                 Completed
               </button>
+            </div>
+          </div>
+          
+          {/* Filters Section */}
+          <div className="tournaments-filters">
+            <div className="filter-group">
+              <label className="filter-label">Sub Mode:</label>
+              <div className="submode-filter-tabs">
+                <button
+                  className={`submode-tab ${subModeFilter === 'all' ? 'active' : ''}`}
+                  onClick={() => setSubModeFilter('all')}
+                  disabled={tournamentsLoading}
+                >
+                  All
+                </button>
+                <button
+                  className={`submode-tab ${subModeFilter === 'solo' ? 'active' : ''}`}
+                  onClick={() => setSubModeFilter('solo')}
+                  disabled={tournamentsLoading}
+                >
+                  Solo
+                </button>
+                <button
+                  className={`submode-tab ${subModeFilter === 'duo' ? 'active' : ''}`}
+                  onClick={() => setSubModeFilter('duo')}
+                  disabled={tournamentsLoading}
+                >
+                  Duo
+                </button>
+                <button
+                  className={`submode-tab ${subModeFilter === 'squad' ? 'active' : ''}`}
+                  onClick={() => setSubModeFilter('squad')}
+                  disabled={tournamentsLoading}
+                >
+                  Squad
+                </button>
+              </div>
+            </div>
+            
+            <div className="filter-group">
+              <label className="filter-label">Date:</label>
+              <input
+                type="date"
+                className="date-filter-input"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                disabled={tournamentsLoading}
+                min={new Date().toISOString().split('T')[0]}
+              />
+              {selectedDate && (
+                <button
+                  className="clear-date-button"
+                  onClick={() => setSelectedDate('')}
+                  disabled={tournamentsLoading}
+                  title="Clear date filter"
+                >
+                  ✕
+                </button>
+              )}
             </div>
           </div>
           {tournamentsLoading ? (
@@ -176,17 +255,30 @@ const GenerateLobbyPage: React.FC = () => {
                       <span className="detail-label">Prize Pool:</span>
                       <span className="detail-value prize-pool">₹{tournament.prizePool}</span>
                     </div>
-                    <div className="tournament-detail-item">
-                      <span className="detail-label">Players:</span>
-                      <span className="detail-value">
-                        {tournament.joinedCount !== undefined 
-                          ? tournament.joinedCount 
-                          : tournament.participants.length}/{tournament.maxPlayers}
-                        {tournament.availableSlots !== undefined && (
-                          <span className="available-slots"> ({tournament.availableSlots} available)</span>
-                        )}
-                      </span>
-                    </div>
+                    {/* Show Teams for Squad/Duo, Players for Solo */}
+                    {(tournament.subMode?.toLowerCase() === 'squad' || tournament.subMode?.toLowerCase() === 'duo') && tournament.maxTeams !== undefined ? (
+                      <div className="tournament-detail-item">
+                        <span className="detail-label">Teams:</span>
+                        <span className="detail-value">
+                          {tournament.joinedTeams !== undefined ? tournament.joinedTeams : 0}/{tournament.maxTeams}
+                          {tournament.availableTeams !== undefined && (
+                            <span className="available-slots"> ({tournament.availableTeams} available)</span>
+                          )}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="tournament-detail-item">
+                        <span className="detail-label">Players:</span>
+                        <span className="detail-value">
+                          {tournament.joinedCount !== undefined 
+                            ? tournament.joinedCount 
+                            : tournament.participants.length}/{tournament.maxPlayers}
+                          {tournament.availableSlots !== undefined && (
+                            <span className="available-slots"> ({tournament.availableSlots} available)</span>
+                          )}
+                        </span>
+                      </div>
+                    )}
                     {tournament.region && (
                       <div className="tournament-detail-item">
                         <span className="detail-label">Region:</span>
@@ -208,6 +300,26 @@ const GenerateLobbyPage: React.FC = () => {
                       )}
                     </div>
                   )}
+                  <div className="tournament-actions">
+                    <button
+                      className="tournament-action-button tournament-edit-button"
+                      onClick={() => handleEditTournament(tournament)}
+                      disabled={tournamentsLoading || isUpdating || isDeleting}
+                      title="Edit Tournament"
+                    >
+                      <span className="action-icon">✏️</span>
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      className="tournament-action-button tournament-delete-button"
+                      onClick={() => openDeleteModal(tournament._id || tournament.id || '')}
+                      disabled={tournamentsLoading || isUpdating || isDeleting}
+                      title="Delete Tournament"
+                    >
+                      <span className="action-icon">🗑️</span>
+                      <span>Delete</span>
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -230,6 +342,34 @@ const GenerateLobbyPage: React.FC = () => {
         onClose={() => setShowGenerateLobbyModal(false)}
         onSuccess={refreshTournaments}
       />
+
+      {/* Edit Tournament Modal */}
+      <EditTournament
+        isOpen={showEditModal}
+        tournament={editingTournament}
+        onClose={() => {
+          setShowEditModal(false);
+          setEditingTournament(null);
+        }}
+        onUpdate={handleUpdateTournament}
+        isUpdating={isUpdating}
+      />
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && tournamentToDelete && (
+        <ConfirmationModal
+          isOpen={showDeleteModal}
+          title="Delete Tournament"
+          message="Are you sure you want to delete this tournament? This action cannot be undone."
+          confirmText="Delete"
+          cancelText="Cancel"
+          onConfirm={handleDeleteTournament}
+          onCancel={() => {
+            setShowDeleteModal(false);
+            setTournamentToDelete(null);
+          }}
+        />
+      )}
     </div>
   );
 };

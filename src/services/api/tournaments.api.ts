@@ -27,6 +27,10 @@ export interface Tournament {
   region?: string;
   createdAt?: string;
   updatedAt?: string;
+  maxTeams?: number;
+  joinedTeams?: number;
+  availableTeams?: number;
+  playersPerTeam?: number;
 }
 
 export interface TournamentsListResponse {
@@ -43,6 +47,27 @@ export interface TournamentsListResponse {
 export interface GetTournamentsParams {
   status?: 'upcoming' | 'live' | 'completed';
   fromDate?: string; // YYYY-MM-DD format, for upcoming only
+}
+
+export interface UpdateTournamentRequest {
+  date?: string; // YYYY-MM-DD format
+  startTime?: string;
+  entryFee?: number;
+  maxPlayers?: number;
+  region?: string;
+}
+
+export interface UpdateTournamentResponse {
+  status: number;
+  success: boolean;
+  message: string;
+  data?: Tournament;
+}
+
+export interface DeleteTournamentResponse {
+  status: number;
+  success: boolean;
+  message: string;
 }
 
 export const tournamentsApi = {
@@ -74,6 +99,25 @@ export const tournamentsApi = {
     }
     
     return [];
+  },
+
+  /**
+   * Update tournament (Admin only)
+   * @param tournamentId - Tournament ID to update
+   * @param data - Tournament data to update
+   */
+  updateTournament: async (tournamentId: string, data: UpdateTournamentRequest): Promise<UpdateTournamentResponse> => {
+    const response = await apiClient.put<UpdateTournamentResponse>(`/api/admin/tournaments/${tournamentId}`, data);
+    return response.data;
+  },
+
+  /**
+   * Delete tournament (Admin only)
+   * @param tournamentId - Tournament ID to delete
+   */
+  deleteTournament: async (tournamentId: string): Promise<DeleteTournamentResponse> => {
+    const response = await apiClient.delete<DeleteTournamentResponse>(`/api/admin/tournaments/${tournamentId}`);
+    return response.data;
   },
 };
 

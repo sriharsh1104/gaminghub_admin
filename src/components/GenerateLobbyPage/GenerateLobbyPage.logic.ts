@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { tournamentsApi, type Tournament, authApi } from '@services/api';
+import { tournamentsApi, type Tournament, authApi, type UpdateTournamentRequest } from '@services/api';
 import { ROUTES } from '@utils/constants';
 import { useAppDispatch, useAppSelector } from '@store/hooks';
 import { selectUser, selectIsAuthenticated, setUser } from '@store/slices/authSlice';
@@ -13,9 +13,18 @@ export const useGenerateLobbyPageLogic = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showGenerateLobbyModal, setShowGenerateLobbyModal] = useState(false);
   const [tournamentStatus, setTournamentStatus] = useState<'upcoming' | 'live' | 'completed'>('upcoming');
+  const [subModeFilter, setSubModeFilter] = useState<'all' | 'solo' | 'duo' | 'squad'>('all');
+  const [selectedDate, setSelectedDate] = useState<string>('');
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const [filteredTournaments, setFilteredTournaments] = useState<Tournament[]>([]);
   const [tournamentsLoading, setTournamentsLoading] = useState(false);
   const [tournamentsError, setTournamentsError] = useState<string | null>(null);
+  const [editingTournament, setEditingTournament] = useState<Tournament | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [tournamentToDelete, setTournamentToDelete] = useState<string | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Check authentication
   useEffect(() => {
@@ -50,8 +59,8 @@ export const useGenerateLobbyPageLogic = () => {
     setSidebarOpen((prev) => !prev);
   };
 
-  // Load tournaments function
-  const loadTournaments = async () => {
+  // Load tournaments function - wrapped in useCallback to prevent infinite loops
+  const loadTournaments = useCallback(async () => {
     setTournamentsLoading(true);
     setTournamentsError(null);
     try {
@@ -59,8 +68,10 @@ export const useGenerateLobbyPageLogic = () => {
         status: tournamentStatus,
       };
       
-      // Only add fromDate for upcoming tournaments (current day)
-      if (tournamentStatus === 'upcoming') {
+      // Add fromDate if selectedDate is set, otherwise use current date for upcoming
+      if (selectedDate) {
+        params.fromDate = selectedDate;
+      } else if (tournamentStatus === 'upcoming') {
         params.fromDate = getCurrentDate();
       }
       
@@ -76,12 +87,74 @@ export const useGenerateLobbyPageLogic = () => {
     } finally {
       setTournamentsLoading(false);
     }
-  };
+  }, [tournamentStatus, selectedDate]);
+
+  // Filter tournaments by subMode (client-side filtering)
+  useEffect(() => {
+    let filtered = [...tournaments];
+    
+    // Filter by subMode
+    if (subModeFilter !== 'all') {
+      filtered = filtered.filter(t => t.subMode?.toLowerCase() === subModeFilter.toLowerCase());
+    }
+    
+    setFilteredTournaments(filtered);
+  }, [tournaments, subModeFilter]);
 
   // Load tournaments based on selected status
   useEffect(() => {
     loadTournaments();
-  }, [tournamentStatus]);
+  }, [loadTournaments]);
+
+  // Handle edit tournament
+  const handleEditTournament = (tournament: Tournament) => {
+    setEditingTournament(tournament);
+    setShowEditModal(true);
+  };
+
+  // Handle update tournament
+  const handleUpdateTournament = async (data: UpdateTournamentRequest) => {
+    if (!editingTournament) return;
+
+    setIsUpdating(true);
+    try {
+      await tournamentsApi.updateTournament(editingTournament._id || editingTournament.id || '', data);
+      setShowEditModal(false);
+      setEditingTournament(null);
+      // Refresh tournaments list
+      await loadTournaments();
+    } catch (error: any) {
+      console.error('Failed to update tournament:', error);
+      throw error;
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  // Handle delete tournament
+  const handleDeleteTournament = async () => {
+    if (!tournamentToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      await tournamentsApi.deleteTournament(tournamentToDelete);
+      setShowDeleteModal(false);
+      setTournamentToDelete(null);
+      // Refresh tournaments list
+      await loadTournaments();
+    } catch (error: any) {
+      console.error('Failed to delete tournament:', error);
+      throw error;
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Open delete confirmation modal
+  const openDeleteModal = (tournamentId: string) => {
+    setTournamentToDelete(tournamentId);
+    setShowDeleteModal(true);
+  };
 
   return {
     user,
@@ -91,10 +164,28 @@ export const useGenerateLobbyPageLogic = () => {
     setShowGenerateLobbyModal,
     tournamentStatus,
     setTournamentStatus,
-    tournaments,
+    subModeFilter,
+    setSubModeFilter,
+    selectedDate,
+    setSelectedDate,
+    tournaments: filteredTournaments,
     tournamentsLoading,
     tournamentsError,
     refreshTournaments: loadTournaments,
+    editingTournament,
+    showEditModal,
+    setShowEditModal,
+    setEditingTournament,
+    handleEditTournament,
+    handleUpdateTournament,
+    isUpdating,
+    showDeleteModal,
+    setShowDeleteModal,
+    tournamentToDelete,
+    setTournamentToDelete,
+    openDeleteModal,
+    handleDeleteTournament,
+    isDeleting,
   };
 };
 
