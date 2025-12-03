@@ -5,7 +5,10 @@ import { store } from '../../store/store';
 import { selectAccessToken, logout } from '../../store/slices/authSlice';
 import { startLoading, stopLoading } from '../../store/slices/loadingSlice';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.gaminghuballday.buzz';
+// Use relative URLs to leverage proxy (Vite in dev, Vercel in production)
+// This avoids CORS issues by making requests from the same origin
+// Override with VITE_API_BASE_URL if you need direct API calls
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const API_TIMEOUT = Number(import.meta.env.VITE_API_TIMEOUT) || 10000;
 
 // Request deduplication - prevent duplicate requests
