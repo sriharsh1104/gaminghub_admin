@@ -75,11 +75,25 @@ npm install
 
 ### Environment Variables
 
-Create a `.env` file in the root directory:
+Copy `.env.example` to `.env` and configure the following variables:
 
 ```env
+# API Configuration
 VITE_API_BASE_URL=https://api.gaminghuballday.buzz
+
+# API Request Timeout (optional, default: 10000ms)
+VITE_API_TIMEOUT=10000
+
+# Application Title (optional, default: booyahx-admin)
+VITE_APP_TITLE=booyahx-admin
 ```
+
+**Required:**
+- `VITE_API_BASE_URL` - Backend API base URL
+
+**Optional:**
+- `VITE_API_TIMEOUT` - API request timeout in milliseconds (default: 10000)
+- `VITE_APP_TITLE` - Application title (default: booyahx-admin)
 
 ### Development
 

@@ -5,7 +5,8 @@ import { store } from '../../store/store';
 import { selectAccessToken, logout } from '../../store/slices/authSlice';
 import { startLoading, stopLoading } from '../../store/slices/loadingSlice';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.gaminghuballday.buzz';
+const API_TIMEOUT = Number(import.meta.env.VITE_API_TIMEOUT) || 10000;
 
 // Request deduplication - prevent duplicate requests
 const pendingRequests = new Map<string, CancelTokenSource>();
@@ -13,7 +14,7 @@ const pendingRequests = new Map<string, CancelTokenSource>();
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: API_TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
   },
