@@ -867,6 +867,20 @@
       opacity: 1;
     }
   }
+
+  &.active {
+    border-color: var(--primary-color);
+    background: linear-gradient(135deg, 
+      rgba(var(--primary-color-rgb), 0.15) 0%,
+      rgba(var(--primary-color-rgb), 0.1) 100%
+    );
+    box-shadow: 0 4px 20px rgba(var(--primary-color-rgb), 0.3);
+    cursor: pointer;
+
+    &::before {
+      opacity: 1;
+    }
+  }
 }
 
 .user-card-checkbox {
@@ -907,11 +921,20 @@
 
 .user-name,
 .user-email,
+.user-balance,
 .user-status {
   display: flex;
   align-items: center;
   gap: $spacing-sm;
   flex-wrap: wrap;
+}
+
+.user-balance {
+  .balance-value {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+  }
 }
 
 .user-status-row {
@@ -1044,6 +1067,128 @@
   flex: 1;
 }
 
+// User Details Sidebar
+.user-details-sidebar {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  width: 350px;
+  background: linear-gradient(180deg, 
+    var(--background-color-dark) 0%,
+    var(--background-color-dark) 100%
+  );
+  border-left: 1px solid rgba(var(--border-color-rgb), 0.5);
+  @include flex-column;
+  z-index: 999;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.user-details-header {
+  @include flex-between;
+  padding: $spacing-lg;
+  border-bottom: 1px solid var(--border-color);
+  min-height: 70px;
+
+  h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+.close-details-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: var(--hover-bg);
+    color: var(--text-primary);
+  }
+}
+
+.user-details-content {
+  flex: 1;
+  padding: $spacing-lg;
+  overflow-y: auto;
+}
+
+.user-detail-section {
+  @include flex-column;
+  gap: $spacing-lg;
+}
+
+.user-detail-item {
+  @include flex-column;
+  gap: $spacing-xs;
+  padding: $spacing-md;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: $border-radius-md;
+  transition: all $transition-fast;
+
+  &.highlight {
+    background: linear-gradient(135deg, 
+      rgba(var(--primary-color-rgb), 0.15) 0%,
+      rgba(var(--primary-color-rgb), 0.1) 100%
+    );
+    border-color: rgba(var(--primary-color-rgb), 0.5);
+  }
+
+  &:hover {
+    border-color: var(--primary-color);
+    transform: translateX(4px);
+  }
+}
+
+.detail-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.balance-highlight {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 // Responsive
 @include respond-to(md) {
   .dashboard-content {
@@ -1055,7 +1200,8 @@
   }
 
   .user-name,
-  .user-email {
+  .user-email,
+  .user-balance {
     flex-direction: column;
     align-items: flex-start;
     gap: $spacing-xs;

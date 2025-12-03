@@ -12,6 +12,7 @@ export interface AdminUser {
   authProvider?: string;
   isBlocked?: boolean;
   roomIds?: string[];
+  balanceGC?: number;
 }
 
 export interface PaginationInfo {

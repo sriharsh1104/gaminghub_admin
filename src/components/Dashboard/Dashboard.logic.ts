@@ -23,6 +23,7 @@ export const useDashboardLogic = () => {
   const [isBlocking, setIsBlocking] = useState(false);
   const [isUnblocking, setIsUnblocking] = useState(false);
   const [processingUserId, setProcessingUserId] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
 
   useEffect(() => {
     // Check authentication from Redux
@@ -306,6 +307,10 @@ export const useDashboardLogic = () => {
 
   const isAllSelected = users.length > 0 && selectedUserIds.size === users.length;
 
+  const handleUserCardClick = (user: AdminUser | null) => {
+    setSelectedUser(user);
+  };
+
   return {
     user,
     sidebarOpen,
@@ -335,6 +340,8 @@ export const useDashboardLogic = () => {
     isBlocking,
     isUnblocking,
     processingUserId,
+    selectedUser,
+    handleUserCardClick,
   };
 };
 

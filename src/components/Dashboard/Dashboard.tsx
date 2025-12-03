@@ -39,6 +39,8 @@ const Dashboard: React.FC = () => {
     isBlocking,
     isUnblocking,
     processingUserId,
+    selectedUser,
+    handleUserCardClick,
   } = useDashboardLogic();
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -62,7 +64,7 @@ const Dashboard: React.FC = () => {
       {/* Sidebar */}
       <aside className={`dashboard-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
         <div className="sidebar-header">
-          <h2 className="sidebar-logo">BooyahX Admin</h2>
+          <h2 className="sidebar-logo">BX</h2>
           <button
             className="sidebar-toggle"
             onClick={toggleSidebar}
@@ -314,8 +316,12 @@ const Dashboard: React.FC = () => {
                     const userId = adminUser.userId || adminUser._id || '';
                     const isSelected = Boolean(userId && selectedUserIds.has(userId));
                     return (
-                      <div key={userId} className={`user-card ${isSelected ? 'selected' : ''}`}>
-                        <div className="user-card-checkbox">
+                      <div 
+                        key={userId} 
+                        className={`user-card ${isSelected ? 'selected' : ''} ${selectedUser?._id === adminUser._id ? 'active' : ''}`}
+                        onClick={() => handleUserCardClick(adminUser)}
+                      >
+                        <div className="user-card-checkbox" onClick={(e) => e.stopPropagation()}>
                           <input
                             type="checkbox"
                             checked={isSelected}
@@ -334,6 +340,10 @@ const Dashboard: React.FC = () => {
                             <span className="user-label">Email:</span>
                             <span className="user-value">{adminUser.email}</span>
                           </div>
+                          <div className="user-balance">
+                            <span className="user-label">Balance GC:</span>
+                            <span className="user-value balance-value">{adminUser.balanceGC ?? 0}</span>
+                          </div>
                           <div className="user-status-row">
                             <div className="user-status">
                               <span className="user-label">Status:</span>
@@ -341,7 +351,7 @@ const Dashboard: React.FC = () => {
                                 {adminUser.isBlocked ? 'Blocked' : 'Active'}
                               </span>
                             </div>
-                            <div className="user-action-buttons">
+                            <div className="user-action-buttons" onClick={(e) => e.stopPropagation()}>
                               {adminUser.role?.toLowerCase() === 'admin' ? (
                                 <span className="admin-badge" title="Admin users cannot be blocked">
                                   Admin
@@ -381,6 +391,63 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </main>
+
+      {/* User Details Sidebar */}
+      {selectedUser && (
+        <aside className="user-details-sidebar">
+          <div className="user-details-header">
+            <h3>User Details</h3>
+            <button
+              className="close-details-button"
+              onClick={() => handleUserCardClick(null)}
+              aria-label="Close"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          <div className="user-details-content">
+            <div className="user-detail-section">
+              <div className="user-detail-item">
+                <span className="detail-label">Name:</span>
+                <span className="detail-value">{selectedUser.name || 'N/A'}</span>
+              </div>
+              <div className="user-detail-item">
+                <span className="detail-label">Email:</span>
+                <span className="detail-value">{selectedUser.email}</span>
+              </div>
+              <div className="user-detail-item">
+                <span className="detail-label">Role:</span>
+                <span className="detail-value">{selectedUser.role || 'N/A'}</span>
+              </div>
+              <div className="user-detail-item">
+                <span className="detail-label">Status:</span>
+                <span className={`detail-value status-badge ${selectedUser.isBlocked ? 'blocked' : 'active'}`}>
+                  {selectedUser.isBlocked ? 'Blocked' : 'Active'}
+                </span>
+              </div>
+              <div className="user-detail-item highlight">
+                <span className="detail-label">Balance GC:</span>
+                <span className="detail-value balance-highlight">{selectedUser.balanceGC ?? 0}</span>
+              </div>
+              {selectedUser.createdAt && (
+                <div className="user-detail-item">
+                  <span className="detail-label">Created:</span>
+                  <span className="detail-value">
+                    {new Date(selectedUser.createdAt).toLocaleDateString('en-IN', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                    })}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        </aside>
+      )}
 
       {/* Logout Confirmation Modal */}
       <ConfirmationModal

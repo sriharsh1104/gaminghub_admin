@@ -60,7 +60,7 @@ const GenerateLobbyPage: React.FC = () => {
       {/* Sidebar */}
       <aside className={`generate-lobby-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
         <div className="sidebar-header">
-          <h2 className="sidebar-logo">BooyahX Admin</h2>
+          <h2 className="sidebar-logo">BX</h2>
           <button
             className="sidebar-toggle"
             onClick={toggleSidebar}
