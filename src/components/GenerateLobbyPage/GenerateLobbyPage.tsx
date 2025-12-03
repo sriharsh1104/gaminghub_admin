@@ -4,6 +4,8 @@ import ThemeToggle from '@components/common/ThemeToggle';
 import GenerateLobby from '@components/GenerateLobby/GenerateLobby';
 import EditTournament from '@components/EditTournament/EditTournament';
 import ConfirmationModal from '@components/common/ConfirmationModal';
+import HostApplications from '@components/HostApplications/HostApplications';
+import UpdateRoom from '@components/UpdateRoom/UpdateRoom';
 import { ROUTES } from '@utils/constants';
 import './GenerateLobbyPage.scss';
 
@@ -39,6 +41,18 @@ const GenerateLobbyPage: React.FC = () => {
     openDeleteModal,
     handleDeleteTournament,
     isDeleting,
+    showHostApplicationsModal,
+    tournamentForApplications,
+    tournamentForApplicationsData,
+    handleViewHostApplications,
+    handleCloseHostApplications,
+    handleApplicationProcessed,
+    updatingRoomTournament,
+    showUpdateRoomModal,
+    handleUpdateRoom,
+    handleCloseUpdateRoom,
+    handleSubmitRoomUpdate,
+    isUpdatingRoom,
   } = useGenerateLobbyPageLogic();
 
   return (
@@ -301,6 +315,38 @@ const GenerateLobbyPage: React.FC = () => {
                     </div>
                   )}
                   <div className="tournament-actions">
+                    {!tournament.hostId ? (
+                      <button
+                        className="tournament-action-button tournament-applications-button"
+                        onClick={() => handleViewHostApplications(tournament._id || tournament.id || '')}
+                        disabled={tournamentsLoading || isUpdating || isDeleting}
+                        title="View Host Applications"
+                      >
+                        <span className="action-icon">👥</span>
+                        <span>View Applications</span>
+                      </button>
+                    ) : (
+                      <button
+                        className="tournament-action-button tournament-edit-host-button"
+                        onClick={() => handleViewHostApplications(tournament._id || tournament.id || '')}
+                        disabled={tournamentsLoading || isUpdating || isDeleting}
+                        title="Edit/Change Host"
+                      >
+                        <span className="action-icon">✏️</span>
+                        <span>Edit Host</span>
+                      </button>
+                    )}
+                    {tournament.room && tournament.room.roomId && (
+                      <button
+                        className="tournament-action-button tournament-update-room-button"
+                        onClick={() => handleUpdateRoom(tournament)}
+                        disabled={tournamentsLoading || isUpdating || isDeleting}
+                        title="Update Room ID/Password"
+                      >
+                        <span className="action-icon">🔑</span>
+                        <span>Update Room</span>
+                      </button>
+                    )}
                     <button
                       className="tournament-action-button tournament-edit-button"
                       onClick={() => handleEditTournament(tournament)}
@@ -368,6 +414,28 @@ const GenerateLobbyPage: React.FC = () => {
             setShowDeleteModal(false);
             setTournamentToDelete(null);
           }}
+        />
+      )}
+
+      {/* Host Applications Modal */}
+      {showHostApplicationsModal && tournamentForApplications && tournamentForApplicationsData && (
+        <HostApplications
+          isOpen={showHostApplicationsModal}
+          tournamentId={tournamentForApplications}
+          tournament={tournamentForApplicationsData}
+          onClose={handleCloseHostApplications}
+          onApplicationProcessed={handleApplicationProcessed}
+        />
+      )}
+
+      {/* Update Room Modal */}
+      {showUpdateRoomModal && updatingRoomTournament && (
+        <UpdateRoom
+          isOpen={showUpdateRoomModal}
+          tournament={updatingRoomTournament}
+          onClose={handleCloseUpdateRoom}
+          onUpdate={handleSubmitRoomUpdate}
+          isUpdating={isUpdatingRoom}
         />
       )}
     </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { tournamentsApi, type Tournament, authApi, type UpdateTournamentRequest } from '@services/api';
+import { tournamentsApi, type Tournament, authApi, type UpdateTournamentRequest, type UpdateRoomRequest } from '@services/api';
 import { ROUTES } from '@utils/constants';
 import { useAppDispatch, useAppSelector } from '@store/hooks';
 import { selectUser, selectIsAuthenticated, setUser } from '@store/slices/authSlice';
@@ -25,6 +25,12 @@ export const useGenerateLobbyPageLogic = () => {
   const [tournamentToDelete, setTournamentToDelete] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showHostApplicationsModal, setShowHostApplicationsModal] = useState(false);
+  const [tournamentForApplications, setTournamentForApplications] = useState<string | null>(null);
+  const [tournamentForApplicationsData, setTournamentForApplicationsData] = useState<Tournament | null>(null);
+  const [updatingRoomTournament, setUpdatingRoomTournament] = useState<Tournament | null>(null);
+  const [showUpdateRoomModal, setShowUpdateRoomModal] = useState(false);
+  const [isUpdatingRoom, setIsUpdatingRoom] = useState(false);
 
   // Check authentication
   useEffect(() => {
@@ -156,6 +162,58 @@ export const useGenerateLobbyPageLogic = () => {
     setShowDeleteModal(true);
   };
 
+  // Handle view host applications
+  const handleViewHostApplications = (tournamentId: string) => {
+    const tournament = tournaments.find(t => (t._id || t.id) === tournamentId);
+    setTournamentForApplications(tournamentId);
+    setTournamentForApplicationsData(tournament || null);
+    setShowHostApplicationsModal(true);
+  };
+
+  // Handle close host applications modal
+  const handleCloseHostApplications = () => {
+    setShowHostApplicationsModal(false);
+    setTournamentForApplications(null);
+    setTournamentForApplicationsData(null);
+  };
+
+  // Handle application processed (after approve/reject)
+  const handleApplicationProcessed = async () => {
+    // Refresh tournaments to get updated host status
+    await loadTournaments();
+  };
+
+  // Handle update room
+  const handleUpdateRoom = (tournament: Tournament) => {
+    setUpdatingRoomTournament(tournament);
+    setShowUpdateRoomModal(true);
+  };
+
+  // Handle close update room modal
+  const handleCloseUpdateRoom = () => {
+    setShowUpdateRoomModal(false);
+    setUpdatingRoomTournament(null);
+  };
+
+  // Handle submit room update
+  const handleSubmitRoomUpdate = async (data: UpdateRoomRequest) => {
+    if (!updatingRoomTournament) return;
+
+    setIsUpdatingRoom(true);
+    try {
+      await tournamentsApi.updateRoom(updatingRoomTournament._id || updatingRoomTournament.id || '', data);
+      setShowUpdateRoomModal(false);
+      setUpdatingRoomTournament(null);
+      // Refresh tournaments list
+      await loadTournaments();
+    } catch (error: any) {
+      console.error('Failed to update room:', error);
+      throw error;
+    } finally {
+      setIsUpdatingRoom(false);
+    }
+  };
+
   return {
     user,
     sidebarOpen,
@@ -186,6 +244,20 @@ export const useGenerateLobbyPageLogic = () => {
     openDeleteModal,
     handleDeleteTournament,
     isDeleting,
+    showHostApplicationsModal,
+    setShowHostApplicationsModal,
+    tournamentForApplications,
+    tournamentForApplicationsData,
+    handleViewHostApplications,
+    handleCloseHostApplications,
+    handleApplicationProcessed,
+    updatingRoomTournament,
+    showUpdateRoomModal,
+    setShowUpdateRoomModal,
+    handleUpdateRoom,
+    handleCloseUpdateRoom,
+    handleSubmitRoomUpdate,
+    isUpdatingRoom,
   };
 };
 

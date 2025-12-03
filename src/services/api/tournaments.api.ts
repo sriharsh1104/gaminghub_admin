@@ -70,6 +70,18 @@ export interface DeleteTournamentResponse {
   message: string;
 }
 
+export interface UpdateRoomRequest {
+  roomId: string;
+  password: string;
+}
+
+export interface UpdateRoomResponse {
+  status: number;
+  success: boolean;
+  message: string;
+  data?: Tournament;
+}
+
 export const tournamentsApi = {
   /**
    * Get tournaments list (Admin only)
@@ -117,6 +129,16 @@ export const tournamentsApi = {
    */
   deleteTournament: async (tournamentId: string): Promise<DeleteTournamentResponse> => {
     const response = await apiClient.delete<DeleteTournamentResponse>(`/api/admin/tournaments/${tournamentId}`);
+    return response.data;
+  },
+
+  /**
+   * Update room information for a tournament (Admin only)
+   * @param tournamentId - Tournament ID to update room for
+   * @param data - Room data (roomId and password)
+   */
+  updateRoom: async (tournamentId: string, data: UpdateRoomRequest): Promise<UpdateRoomResponse> => {
+    const response = await apiClient.post<UpdateRoomResponse>(`/api/admin/tournaments/${tournamentId}/update-room`, data);
     return response.data;
   },
 };
