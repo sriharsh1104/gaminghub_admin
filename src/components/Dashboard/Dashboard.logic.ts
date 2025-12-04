@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi, usersApi, type AdminUser } from '@services/api';
 import { ROUTES } from '@utils/constants';
@@ -17,6 +17,8 @@ export const useDashboardLogic = () => {
   const [usersLoading, setUsersLoading] = useState(false);
   const [usersError, setUsersError] = useState<string | null>(null);
   const [pagination, setPagination] = useState<{ page: number; total: number; totalPages: number } | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageLimit] = useState<number>(10);
   const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'host' | 'user'>('all');
   const [userQuery, setUserQuery] = useState<string>('');
   const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set());
@@ -24,6 +26,7 @@ export const useDashboardLogic = () => {
   const [isUnblocking, setIsUnblocking] = useState(false);
   const [processingUserId, setProcessingUserId] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+  const isManualSearchRef = useRef(false);
 
   useEffect(() => {
     // Check authentication from Redux
@@ -54,6 +57,11 @@ export const useDashboardLogic = () => {
   // Load users list based on role filter (without query - query only on button click)
   useEffect(() => {
     if (!isAuthenticated) return;
+    if (isManualSearchRef.current) {
+      // Skip automatic load if we're doing a manual search
+      isManualSearchRef.current = false;
+      return;
+    }
 
     const loadUsers = async () => {
       setUsersLoading(true);
@@ -63,7 +71,7 @@ export const useDashboardLogic = () => {
         // If filter is specific role, pass role parameter (searches only that role)
         const role = roleFilter === 'all' ? undefined : roleFilter;
         // Don't pass query here - only load users by role
-        const result = await usersApi.getUsers(role);
+        const result = await usersApi.getUsers(role, undefined, currentPage, pageLimit);
         setUsers(result.users);
         if (result.pagination) {
           setPagination({
@@ -90,7 +98,7 @@ export const useDashboardLogic = () => {
     };
 
     loadUsers();
-  }, [isAuthenticated, roleFilter]);
+  }, [isAuthenticated, roleFilter, currentPage, pageLimit]);
 
   const handleLogoutConfirm = async () => {
     try {
@@ -110,12 +118,15 @@ export const useDashboardLogic = () => {
 
   const handleRoleFilterChange = (filter: 'all' | 'admin' | 'host' | 'user') => {
     setRoleFilter(filter);
+    setCurrentPage(1); // Reset to first page when filter changes
     setSelectedUserIds(new Set()); // Clear selection when filter changes
   };
 
   const handleQueryUsers = async () => {
     if (!isAuthenticated) return;
 
+    isManualSearchRef.current = true; // Prevent useEffect from running
+    setCurrentPage(1); // Reset to first page when searching
     setUsersLoading(true);
     setUsersError(null);
     try {
@@ -123,7 +134,7 @@ export const useDashboardLogic = () => {
       // If filter is specific role, pass role parameter (searches only that role)
       const role = roleFilter === 'all' ? undefined : roleFilter;
       const query = userQuery.trim() || undefined;
-      const result = await usersApi.getUsers(role, query);
+      const result = await usersApi.getUsers(role, query, 1, pageLimit); // Use page 1 for new search
       setUsers(result.users);
       if (result.pagination) {
         setPagination({
@@ -204,7 +215,7 @@ export const useDashboardLogic = () => {
       // Reload users list with current filters
       const role = roleFilter === 'all' ? undefined : roleFilter;
       const query = userQuery.trim() || undefined;
-      const result = await usersApi.getUsers(role, query);
+      const result = await usersApi.getUsers(role, query, currentPage, pageLimit);
       setUsers(result.users);
       if (result.pagination) {
         setPagination({
@@ -233,7 +244,7 @@ export const useDashboardLogic = () => {
       // Reload users list with current filters
       const role = roleFilter === 'all' ? undefined : roleFilter;
       const query = userQuery.trim() || undefined;
-      const result = await usersApi.getUsers(role, query);
+      const result = await usersApi.getUsers(role, query, currentPage, pageLimit);
       setUsers(result.users);
       if (result.pagination) {
         setPagination({
@@ -264,7 +275,7 @@ export const useDashboardLogic = () => {
       // Reload users list with current filters
       const role = roleFilter === 'all' ? undefined : roleFilter;
       const query = userQuery.trim() || undefined;
-      const result = await usersApi.getUsers(role, query);
+      const result = await usersApi.getUsers(role, query, currentPage, pageLimit);
       setUsers(result.users);
       if (result.pagination) {
         setPagination({
@@ -288,7 +299,7 @@ export const useDashboardLogic = () => {
       // Reload users list with current filters
       const role = roleFilter === 'all' ? undefined : roleFilter;
       const query = userQuery.trim() || undefined;
-      const result = await usersApi.getUsers(role, query);
+      const result = await usersApi.getUsers(role, query, currentPage, pageLimit);
       setUsers(result.users);
       if (result.pagination) {
         setPagination({
@@ -309,6 +320,53 @@ export const useDashboardLogic = () => {
 
   const handleUserCardClick = (user: AdminUser | null) => {
     setSelectedUser(user);
+  };
+
+  const handlePageChange = async (newPage: number) => {
+    if (newPage >= 1 && pagination && newPage <= pagination.totalPages) {
+      setCurrentPage(newPage);
+      setSelectedUserIds(new Set()); // Clear selection when page changes
+      
+      // If there's a search query, reload with query; otherwise useEffect will handle it
+      if (userQuery.trim()) {
+        isManualSearchRef.current = true;
+        setUsersLoading(true);
+        setUsersError(null);
+        try {
+          const role = roleFilter === 'all' ? undefined : roleFilter;
+          const query = userQuery.trim() || undefined;
+          const result = await usersApi.getUsers(role, query, newPage, pageLimit);
+          setUsers(result.users);
+          if (result.pagination) {
+            setPagination({
+              page: result.pagination.page,
+              total: result.pagination.total,
+              totalPages: result.pagination.totalPages,
+            });
+          }
+        } catch (error: any) {
+          if (error?.message?.includes('cancelled') || error?.name === 'CanceledError' || error?.code === 'ERR_CANCELED') {
+            return;
+          }
+          console.error('Failed to load users:', error);
+          setUsersError(error?.message || 'Failed to load users');
+        } finally {
+          setUsersLoading(false);
+        }
+      }
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      handlePageChange(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (pagination && currentPage < pagination.totalPages) {
+      handlePageChange(currentPage + 1);
+    }
   };
 
   return {
@@ -342,6 +400,10 @@ export const useDashboardLogic = () => {
     processingUserId,
     selectedUser,
     handleUserCardClick,
+    currentPage,
+    handlePageChange,
+    handlePreviousPage,
+    handleNextPage,
   };
 };
 

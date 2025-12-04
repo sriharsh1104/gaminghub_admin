@@ -41,6 +41,10 @@ const Dashboard: React.FC = () => {
     processingUserId,
     selectedUser,
     handleUserCardClick,
+    currentPage,
+    handlePageChange,
+    handlePreviousPage,
+    handleNextPage,
   } = useDashboardLogic();
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -382,6 +386,37 @@ const Dashboard: React.FC = () => {
                     );
                   })}
                 </div>
+                {/* Pagination Controls */}
+                {pagination && pagination.totalPages > 1 && (
+                  <div className="pagination-controls">
+                    <button
+                      className="pagination-button"
+                      onClick={handlePreviousPage}
+                      disabled={currentPage === 1 || usersLoading}
+                      aria-label="Previous page"
+                    >
+                      ← Previous
+                    </button>
+                    <div className="pagination-info">
+                      <span className="pagination-text">
+                        Page {currentPage} of {pagination.totalPages}
+                      </span>
+                      {pagination.total > 0 && (
+                        <span className="pagination-total">
+                          (Showing {((currentPage - 1) * 10) + 1}-{Math.min(currentPage * 10, pagination.total)} of {pagination.total})
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      className="pagination-button"
+                      onClick={handleNextPage}
+                      disabled={currentPage >= pagination.totalPages || usersLoading}
+                      aria-label="Next page"
+                    >
+                      Next →
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="users-empty">

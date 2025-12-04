@@ -51,8 +51,10 @@ export const usersApi = {
    * Get admin users with optional role filter and search query
    * @param role - Filter by role (e.g., 'admin')
    * @param query - Search query for name or email
+   * @param page - Page number (default: 1)
+   * @param limit - Items per page (default: 10)
    */
-  getUsers: async (role?: string, query?: string): Promise<{ users: AdminUser[]; pagination?: PaginationInfo }> => {
+  getUsers: async (role?: string, query?: string, page?: number, limit?: number): Promise<{ users: AdminUser[]; pagination?: PaginationInfo }> => {
     try {
       const params: Record<string, string> = {};
       if (role) {
@@ -60,6 +62,12 @@ export const usersApi = {
       }
       if (query && query.trim()) {
         params.query = query.trim();
+      }
+      if (page) {
+        params.page = page.toString();
+      }
+      if (limit) {
+        params.limit = limit.toString();
       }
       const response = await apiClient.get<UsersListResponse>('/api/admin/users', { params });
       
