@@ -9,6 +9,7 @@ export const ROUTES = {
   PROFILE: '/profile',
   GENERATE_LOBBY: '/generate-lobby',
   TOP_UP: '/top-up',
+  HOST_CREATION: '/host-creation',
 } as const;
 
 export const STORAGE_KEYS = {

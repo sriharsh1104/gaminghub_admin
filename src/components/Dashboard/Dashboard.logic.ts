@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authApi, usersApi, type AdminUser } from '@services/api';
+import { authApi, usersApi, hostApplicationsApi, type AdminUser, type HostStatistics } from '@services/api';
 import { ROUTES } from '@utils/constants';
 import { useAppDispatch, useAppSelector } from '@store/hooks';
 import { selectUser, selectIsAuthenticated, setUser, logout } from '@store/slices/authSlice';
@@ -27,6 +27,20 @@ export const useDashboardLogic = () => {
   const [processingUserId, setProcessingUserId] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const isManualSearchRef = useRef(false);
+  
+  // Host Statistics states
+  const [activeTab, setActiveTab] = useState<'users' | 'hostStats'>('users');
+  const [hostStatistics, setHostStatistics] = useState<HostStatistics[]>([]);
+  const [hostStatsLoading, setHostStatsLoading] = useState(false);
+  const [hostStatsError, setHostStatsError] = useState<string | null>(null);
+  const [hostStatsFilters, setHostStatsFilters] = useState<{
+    date?: string;
+    fromDate?: string;
+    toDate?: string;
+    hostId?: string;
+  }>({});
+  const [totalHosts, setTotalHosts] = useState<number>(0);
+  const [totalLobbies, setTotalLobbies] = useState<number>(0);
 
   useEffect(() => {
     // Check authentication from Redux
@@ -383,6 +397,42 @@ export const useDashboardLogic = () => {
     }
   };
 
+  // Host Statistics functions
+  const loadHostStatistics = useCallback(async () => {
+    if (!isAuthenticated) return;
+    
+    setHostStatsLoading(true);
+    setHostStatsError(null);
+    try {
+      const result = await hostApplicationsApi.getHostStatistics(hostStatsFilters);
+      setHostStatistics(result.hosts || []);
+      setTotalHosts(result.totalHosts || 0);
+      setTotalLobbies(result.totalLobbies || 0);
+    } catch (error: any) {
+      console.error('Failed to load host statistics:', error);
+      setHostStatsError(error?.message || 'Failed to load host statistics');
+    } finally {
+      setHostStatsLoading(false);
+    }
+  }, [isAuthenticated, hostStatsFilters]);
+
+  useEffect(() => {
+    if (activeTab === 'hostStats' && isAuthenticated) {
+      loadHostStatistics();
+    }
+  }, [activeTab, isAuthenticated, loadHostStatistics]);
+
+  const handleHostStatsFilterChange = (filterType: 'date' | 'fromDate' | 'toDate' | 'hostId', value: string) => {
+    setHostStatsFilters((prev) => ({
+      ...prev,
+      [filterType]: value || undefined,
+    }));
+  };
+
+  const handleClearHostStatsFilters = () => {
+    setHostStatsFilters({});
+  };
+
   return {
     user,
     sidebarOpen,
@@ -419,6 +469,18 @@ export const useDashboardLogic = () => {
     handlePageChange,
     handlePreviousPage,
     handleNextPage,
+    // Host Statistics
+    activeTab,
+    setActiveTab,
+    hostStatistics,
+    hostStatsLoading,
+    hostStatsError,
+    hostStatsFilters,
+    totalHosts,
+    totalLobbies,
+    handleHostStatsFilterChange,
+    handleClearHostStatsFilters,
+    loadHostStatistics,
   };
 };
 

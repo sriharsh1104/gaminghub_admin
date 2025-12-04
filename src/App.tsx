@@ -12,6 +12,7 @@ const HealthStatus = lazy(() => import('@components/HealthStatus/HealthStatus'))
 const Profile = lazy(() => import('@components/Profile/Profile'));
 const GenerateLobbyPage = lazy(() => import('@components/GenerateLobbyPage/GenerateLobbyPage'));
 const TopUpPage = lazy(() => import('@components/TopUpPage/TopUpPage'));
+const HostCreationPage = lazy(() => import('@components/HostCreationPage/HostCreationPage'));
 
 function App() {
   return (
@@ -57,6 +58,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <TopUpPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.HOST_CREATION}
+            element={
+              <ProtectedRoute>
+                <HostCreationPage />
               </ProtectedRoute>
             }
           />

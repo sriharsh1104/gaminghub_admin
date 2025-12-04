@@ -1600,3 +1600,283 @@
   }
 }
 
+// Dashboard Tabs
+.dashboard-tabs {
+  @include flex-between;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+  border-bottom: 2px solid var(--border-color);
+  padding: 0 $spacing-md;
+}
+
+.tab-button {
+  @include button-secondary;
+  padding: $spacing-md $spacing-xl;
+  border: none;
+  border-bottom: 3px solid transparent;
+  border-radius: $border-radius-md $border-radius-md 0 0;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-fast;
+  position: relative;
+  bottom: -2px;
+
+  &:hover {
+    color: var(--primary-color);
+    background: rgba(var(--primary-color-rgb), 0.1);
+  }
+
+  &.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+    background: rgba(var(--primary-color-rgb), 0.1);
+  }
+}
+
+// Host Statistics
+.host-stats-summary {
+  @include flex-between;
+  gap: $spacing-lg;
+  padding: $spacing-md;
+  background: rgba(var(--primary-color-rgb), 0.1);
+  border-radius: $border-radius-md;
+  margin-bottom: $spacing-md;
+}
+
+.stat-item {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.host-stats-filters {
+  @include flex-between;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+  padding: $spacing-md;
+  background: var(--background-color-dark);
+  border-radius: $border-radius-md;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  @include flex-column;
+  gap: $spacing-xs;
+  flex: 1;
+  min-width: 150px;
+}
+
+.filter-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.filter-input {
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid var(--border-color);
+  border-radius: $border-radius-sm;
+  background: var(--background-color);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  transition: all $transition-fast;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.clear-filters-button {
+  @include button-secondary;
+  padding: $spacing-sm $spacing-md;
+  align-self: flex-end;
+  margin-top: $spacing-lg;
+}
+
+.host-stats-loading,
+.host-stats-error,
+.host-stats-empty {
+  padding: $spacing-xl;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.host-stats-error {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: $border-radius-md;
+}
+
+.host-stats-list {
+  @include flex-column;
+  gap: $spacing-lg;
+}
+
+.host-stat-card {
+  padding: $spacing-lg;
+  background: var(--background-color-dark);
+  border: 1px solid var(--border-color);
+  border-radius: $border-radius-md;
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.1);
+  }
+}
+
+.host-stat-header {
+  @include flex-between;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-md;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.host-stat-info {
+  @include flex-column;
+  gap: $spacing-xs;
+}
+
+.host-stat-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.host-stat-email {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.host-stat-id {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-family: monospace;
+  margin: 0;
+}
+
+.host-stat-total {
+  @include flex-column;
+  align-items: flex-end;
+  gap: $spacing-xs;
+}
+
+.total-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.total-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.host-stat-timeslots {
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1px solid var(--border-color);
+}
+
+.timeslot-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 $spacing-sm 0;
+}
+
+.timeslot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: $spacing-sm;
+  margin-top: $spacing-sm;
+}
+
+.timeslot-item {
+  @include flex-between;
+  padding: $spacing-sm;
+  background: var(--background-color);
+  border-radius: $border-radius-sm;
+  border: 1px solid var(--border-color);
+}
+
+.timeslot-time {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.timeslot-count {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.host-stat-daily {
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1px solid var(--border-color);
+}
+
+.daily-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 $spacing-sm 0;
+}
+
+.daily-records-list {
+  @include flex-column;
+  gap: $spacing-sm;
+  margin-top: $spacing-sm;
+}
+
+.daily-record-item {
+  @include flex-between;
+  padding: $spacing-sm $spacing-md;
+  background: var(--background-color);
+  border-radius: $border-radius-sm;
+  border: 1px solid var(--border-color);
+  align-items: flex-start;
+}
+
+.daily-date {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.daily-lobbies {
+  font-size: 0.875rem;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.daily-tournaments {
+  @include flex-column;
+  gap: $spacing-xs;
+  margin-top: $spacing-xs;
+  width: 100%;
+}
+
+.tournament-item {
+  @include flex-between;
+  padding: $spacing-xs;
+  background: rgba(var(--primary-color-rgb), 0.05);
+  border-radius: $border-radius-sm;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+

@@ -127,6 +127,18 @@ const TopUpPage: React.FC = () => {
             <span className="nav-icon">💰</span>
             {sidebarOpen && <span className="nav-text">Top Up</span>}
           </Link>
+          <Link 
+            to={ROUTES.HOST_CREATION} 
+            className={`nav-item ${location.pathname === ROUTES.HOST_CREATION ? 'active' : ''}`}
+            onClick={(e) => {
+              if (location.pathname === ROUTES.HOST_CREATION) {
+                e.preventDefault();
+              }
+            }}
+          >
+            <span className="nav-icon">👤</span>
+            {sidebarOpen && <span className="nav-text">Host Creation</span>}
+          </Link>
         </nav>
 
         <div className="sidebar-footer">
